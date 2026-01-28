@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Root Menu -->
+        <menuitem id="menu_root" name="👥 Quản lý Nhân sự" sequence="0"/>
+
+        <!-- Menu Items -->
+        <menuitem name="👤 Quản lý Nhân viên" id="menu_nhan_vien" parent="menu_root" sequence="1" 
+                  action="nhan_su.action_hr_employee_extended_kanban"/>
+        
+        <!-- Disable legacy slider menu if present in DB -->
+        <record id="menu_nhan_vien_slider" model="ir.ui.menu">
+            <field name="active">False</field>
+        </record>
+
+        <!-- Categories -->
+        <menuitem name="📚 Danh mục chung" id="menu_danh_muc_chung" parent="menu_root" sequence="8"/>
+        <menuitem name="🏢 Danh mục đơn vị" id="menu_don_vi" parent="menu_danh_muc_chung" sequence="1" 
+                  action="nhan_su.action_don_vi_modern"/>
+        <menuitem name="💼 Danh mục chức vụ" id="menu_chuc_vu" parent="menu_danh_muc_chung" sequence="2" 
+                  action="nhan_su.action_chuc_vu_modern"/>
+        <menuitem name="🎓 Danh mục chứng chỉ, bằng cấp" id="menu_chung_chi_bang_cap" parent="menu_danh_muc_chung" 
+                  sequence="3" action="nhan_su.action_chung_chi_bang_cap_modern"/>
+    </data>
+</odoo>

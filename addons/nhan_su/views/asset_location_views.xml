@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Asset Location Tree View -->
+        <record id="view_asset_location_tree" model="ir.ui.view">
+            <field name="name">asset.location.tree</field>
+            <field name="model">asset.location</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="address"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Asset Location Form View -->
+        <record id="view_asset_location_form" model="ir.ui.view">
+            <field name="name">asset.location.form</field>
+            <field name="model">asset.location</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Tên vị trí"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="address"/>
+                            </group>
+                            <group>
+                                <field name="description"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Tài sản">
+                                <field name="asset_ids" nolabel="1">
+                                    <tree>
+                                        <field name="asset_code"/>
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Phòng họp">
+                                <field name="meeting_room_ids" nolabel="1">
+                                    <tree>
+                                        <field name="code"/>
+                                        <field name="name"/>
+                                        <field name="capacity"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Asset Location Search View -->
+        <record id="view_asset_location_search" model="ir.ui.view">
+            <field name="name">asset.location.search</field>
+            <field name="model">asset.location</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="address"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_asset_location" model="ir.actions.act_window">
+            <field name="name">Vị trí tài sản</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">asset.location</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_asset_location_search"/>
+        </record>
+    </data>
+</odoo>

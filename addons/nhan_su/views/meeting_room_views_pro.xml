@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== MEETING ROOM KANBAN VIEW ==================== -->
+    <record id="view_meeting_room_kanban" model="ir.ui.view">
+        <field name="name">meeting.room.kanban</field>
+        <field name="model">meeting.room</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard" default_group_by="location_id">
+                <field name="id"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="location_id"/>
+                <field name="capacity"/>
+                <field name="state"/>
+                <field name="image"/>
+                <field name="has_projector"/>
+                <field name="has_screen"/>
+                <field name="has_sound_system"/>
+                <field name="has_wifi"/>
+                <field name="has_whiteboard"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header with State -->
+                            <div class="p-3 rounded-top" t-attf-style="background: linear-gradient(135deg, #{record.state.raw_value == 'available' ? '#11998e, #38ef7d' : '#f093fb, #f5576c'});">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <strong style="font-size: 14px;">
+                                        <i t-if="record.state.raw_value == 'available'" class="fa fa-check-circle mr-1"/>
+                                        <i t-if="record.state.raw_value == 'maintenance'" class="fa fa-wrench mr-1"/>
+                                        <field name="state"/>
+                                    </strong>
+                                    <span class="badge" style="background: rgba(255,255,255,0.25); font-size: 11px;">
+                                        <field name="code"/>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Image -->
+                            <div class="text-center p-3" style="background: #f8f9fa;">
+                                <img t-att-src="kanban_image('meeting.room', 'image', record.id.raw_value)" alt="Room" style="max-height: 120px; border-radius: 8px;"/>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="p-3">
+                                <div class="font-weight-bold mb-2" style="font-size: 15px;">
+                                    <field name="name"/>
+                                </div>
+                                
+                                <div class="text-muted small mb-2">
+                                    <i class="fa fa-map-marker mr-1"/> <field name="location_id"/>
+                                </div>
+                                
+                                <!-- Capacity -->
+                                <div class="mb-2 p-2 rounded" style="background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small">👥 Sức chứa</span>
+                                        <span class="font-weight-bold" style="color: #667eea;">
+                                            <field name="capacity"/> người
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Equipment Icons -->
+                                <div class="d-flex justify-content-around mt-2" style="font-size: 18px;">
+                                    <span t-if="record.has_projector.raw_value" title="Máy chiếu" style="color: #667eea;">
+                                        <i class="fa fa-video-camera"/>
+                                    </span>
+                                    <span t-if="record.has_screen.raw_value" title="Màn hình" style="color: #11998e;">
+                                        <i class="fa fa-desktop"/>
+                                    </span>
+                                    <span t-if="record.has_sound_system.raw_value" title="Loa" style="color: #f5576c;">
+                                        <i class="fa fa-volume-up"/>
+                                    </span>
+                                    <span t-if="record.has_wifi.raw_value" title="WiFi" style="color: #4facfe;">
+                                        <i class="fa fa-wifi"/>
+                                    </span>
+                                    <span t-if="record.has_whiteboard.raw_value" title="Bảng trắng" style="color: #485563;">
+                                        <i class="fa fa-pencil-square-o"/>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== MEETING ROOM TREE VIEW PRO ==================== -->
+    <record id="view_meeting_room_tree_pro" model="ir.ui.view">
+        <field name="name">meeting.room.tree.pro</field>
+        <field name="model">meeting.room</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='available'" 
+                  decoration-warning="state=='maintenance'"
+                  default_order="code asc">
+                <field name="image" widget="image" options="{'size': [40, 40]}"/>
+                <field name="code" string="🔢 Mã phòng"/>
+                <field name="name" string="🏢 Tên phòng"/>
+                <field name="location_id" string="📍 Vị trí"/>
+                <field name="floor" string="🏗️ Tầng" optional="show"/>
+                <field name="capacity" string="👥 Sức chứa"/>
+                <field name="area" string="📐 Diện tích (m²)" optional="show"/>
+                <field name="has_projector" string="📽️ Máy chiếu" widget="boolean" optional="show"/>
+                <field name="has_wifi" string="📶 WiFi" widget="boolean" optional="show"/>
+                <field name="manager_id" string="👤 Quản lý" optional="show"/>
+                <field name="state" string="📊 Trạng thái" widget="badge" 
+                       decoration-success="state=='available'" 
+                       decoration-warning="state=='maintenance'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== MEETING ROOM FORM VIEW PRO ==================== -->
+    <record id="view_meeting_room_form_pro" model="ir.ui.view">
+        <field name="name">meeting.room.form.pro</field>
+        <field name="model">meeting.room</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_maintenance" string="🔧 Bảo trì" type="object" class="btn-warning"
+                            attrs="{'invisible': [('state', '==', 'maintenance')]}"/>
+                    <button name="action_available" string="✅ Sẵn sàng" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', '==', 'available')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="available,maintenance"/>
+                </header>
+                <sheet>
+                    <!-- Title Section -->
+                    <div class="oe_title">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <field name="image" widget="image" class="oe_avatar" options="{'size': [120, 120]}" style="border-radius: 12px; border: 4px solid #667eea;"/>
+                            </div>
+                            <div class="col-md-10">
+                                <h1 class="mb-2">
+                                    <field name="name" placeholder="Tên phòng họp" style="color: #667eea;"/>
+                                </h1>
+                                <h3 class="text-muted">
+                                    <field name="location_id" placeholder="Vị trí"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Cards -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #667eea;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">🔢 MÃ PHÒNG</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #667eea;">
+                                        <field name="code"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #11998e;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">👥 SỨC CHỨA</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #11998e;">
+                                        <field name="capacity"/> người
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #f5576c;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">📐 DIỆN TÍCH</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #f5576c;">
+                                        <field name="area"/> m²
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #4facfe;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">🏗️ TẦNG</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #4facfe;">
+                                        <field name="floor"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Info -->
+                    <group class="mt-4">
+                        <group string="📋 Thông tin">
+                            <field name="manager_id"/>
+                        </group>
+                    </group>
+                    
+                    <!-- Equipment Section with Icons -->
+                    <group string="🛠️ Thiết bị">
+                        <group>
+                            <field name="has_projector" string="📽️ Máy chiếu"/>
+                            <field name="has_screen" string="🖥️ Màn hình"/>
+                            <field name="has_sound_system" string="🔊 Hệ thống âm thanh"/>
+                        </group>
+                        <group>
+                            <field name="has_wifi" string="📶 WiFi"/>
+                            <field name="has_whiteboard" string="📝 Bảng trắng"/>
+                        </group>
+                    </group>
+                    
+                    <group string="📝 Ghi chú thiết bị">
+                        <field name="equipment_notes" placeholder="Chi tiết về thiết bị..." nolabel="1"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📅 Lịch đặt phòng" name="bookings">
+                            <field name="booking_ids" nolabel="1">
+                                <tree decoration-info="state=='confirmed'" 
+                                      decoration-success="state=='completed'"
+                                      decoration-warning="state=='pending'"
+                                      decoration-danger="state=='cancelled'">
+                                    <field name="subject"/>
+                                    <field name="organizer_id"/>
+                                    <field name="start_time"/>
+                                    <field name="end_time"/>
+                                    <field name="duration" widget="float_time"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="📝 Ghi chú" name="notes">
+                            <field name="notes" placeholder="Ghi chú về phòng họp..." nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== CALENDAR VIEW ==================== -->
+    <record id="view_meeting_room_calendar" model="ir.ui.view">
+        <field name="name">meeting.room.calendar</field>
+        <field name="model">meeting.room</field>
+        <field name="arch" type="xml">
+            <calendar string="📅 Lịch phòng họp" date_start="create_date" color="state" mode="month">
+                <field name="name"/>
+                <field name="capacity"/>
+                <field name="location_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ==================== UPDATE ACTION ==================== -->
+    <record id="action_meeting_room_pro" model="ir.actions.act_window">
+        <field name="name">🏢 Quản lý phòng họp</field>
+        <field name="res_model">meeting.room</field>
+        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="search_view_id" ref="view_meeting_room_search"/>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-building mr-2"/> Quản lý phòng họp
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px;">
+                        Quản lý phòng họp và thiết bị hiệu quả
+                    </p>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

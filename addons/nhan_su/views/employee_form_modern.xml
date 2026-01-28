@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ============================================== -->
+        <!-- 🎨 MODERN FORM VIEW - ENHANCED DESIGN          -->
+        <!-- ============================================== -->
+        <record id="view_hr_employee_extended_form_modern" model="ir.ui.view">
+            <field name="name">hr.employee.extended.form.modern</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <form string="Thông tin nhân viên">
+                    <header>
+                        <button name="action_activate_profile" string="✓ Kích hoạt hồ sơ"
+                                type="object" class="btn-success"
+                                attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                        <button name="action_deactivate_profile" string="⊗ Hủy kích hoạt"
+                                type="object" class="btn-warning"
+                                attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                        <button name="action_terminate_profile" string="✗ Đánh dấu nghỉ việc"
+                                type="object" class="btn-danger"
+                                attrs="{'invisible': [('state', '==', 'terminated')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,pending,active,inactive"/>
+                    </header>
+                    <sheet>
+
+                        <!-- Employee Header with Photo -->
+                        <div class="oe_title" style="position: relative;">
+                            <field name="photo" widget="image" class="oe_avatar" 
+                                   style="float: right; width: 150px; height: 150px; border-radius: 50%; 
+                                          box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 5px solid white;"/>
+                            <label for="name" class="oe_edit_only" style="font-size: 14px; color: #718096;"/>
+                            <h1 style="margin-top: 20px;">
+                                <field name="name" placeholder="Họ và tên đầy đủ" 
+                                       style="font-weight: 700; color: #2d3748;"/>
+                            </h1>
+                            <h3 style="margin: 5px 0; color: #667eea;">
+                                <field name="job_title" placeholder="Chức vụ" class="oe_inline"/>
+                            </h3>
+                            <h4 style="margin: 5px 0; color: #718096;">
+                                <i class="fa fa-building-o"/> 
+                                <field name="department_id" placeholder="Phòng ban" class="oe_inline"/>
+                            </h4>
+                        </div>
+
+                        <!-- Main Information Cards -->
+                        <group>
+                            <group string="📋 Thông tin cơ bản" class="o_hr_animate">
+                                <field name="employee_code" readonly="1" 
+                                       style="font-weight: 700; color: #667eea;"/>
+                                <field name="date_of_birth"/>
+                                <field name="age" readonly="1" 
+                                       widget="badge" decoration-info="age &lt; 30" 
+                                       decoration-success="age &gt;= 30 and age &lt; 50" 
+                                       decoration-warning="age &gt;= 50"/>
+                                <field name="gender"/>
+                                <field name="marital_status"/>
+                                <field name="ethnicity"/>
+                                <field name="religion"/>
+                            </group>
+                            
+                            <group string="🆔 CMND/CCCD" class="o_hr_animate">
+                                <field name="identity_number"/>
+                                <field name="identity_issued_date"/>
+                                <field name="identity_issued_place"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="🏠 Địa chỉ" class="o_hr_animate">
+                                <field name="permanent_address" placeholder="Địa chỉ thường trú"/>
+                                <field name="current_address" placeholder="Địa chỉ tạm trú"/>
+                            </group>
+                            
+                            <group string="📞 Liên hệ" class="o_hr_animate">
+                                <field name="phone" placeholder="+84 xxx xxx xxx" 
+                                       widget="phone"/>
+                                <field name="personal_email" placeholder="email@example.com" 
+                                       widget="email"/>
+                                <field name="work_email" readonly="1" 
+                                       widget="email"/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="💼 Thông tin công việc" class="o_hr_animate">
+                                <field name="manager_id" 
+                                       domain="[('id', '!=', id)]"/>
+                                <field name="hire_date"/>
+                                <field name="years_of_service" readonly="1" 
+                                       widget="badge" decoration-info="years_of_service &lt; 1" 
+                                       decoration-success="years_of_service &gt;= 1 and years_of_service &lt; 5" 
+                                       decoration-primary="years_of_service &gt;= 5"/>
+                                <field name="contract_type"/>
+                                <field name="work_location"/>
+                                <field name="work_shift"/>
+                            </group>
+                            
+                            <group string="🎓 Học vấn &amp; Chuyên môn" class="o_hr_animate">
+                                <field name="education_level"/>
+                                <field name="major"/>
+                                <field name="school"/>
+                                <field name="graduation_year"/>
+                                <field name="certificates" placeholder="Danh sách chứng chỉ..."/>
+                                <field name="special_skills" placeholder="Kỹ năng đặc biệt..."/>
+                            </group>
+                        </group>
+
+                        <group>
+                            <group string="🚨 Liên hệ khẩn cấp" class="o_hr_animate">
+                                <field name="emergency_contact_name"/>
+                                <field name="emergency_contact_relationship"/>
+                                <field name="emergency_contact_phone" widget="phone"/>
+                                <field name="emergency_contact_address"/>
+                            </group>
+                            
+                            <group string="💻 Tài khoản hệ thống" class="o_hr_animate">
+                                <field name="user_id" readonly="1"/>
+                                <field name="username" readonly="1"/>
+                            </group>
+                        </group>
+
+                        <!-- Telegram Integration -->
+                        <group string="📱 Thông báo Telegram" class="o_hr_animate">
+                            <group>
+                                <field name="telegram_chat_id" placeholder="Nhập Chat ID từ @userinfobot"/>
+                                <field name="telegram_enabled" widget="boolean_toggle"/>
+                            </group>
+                            <group>
+                                <div class="alert alert-info" style="border-radius: 10px; padding: 15px;">
+                                    <i class="fa fa-info-circle fa-2x" style="float: left; margin-right: 15px; color: #4facfe;"/>
+                                    <strong>Hướng dẫn lấy Chat ID:</strong><br/>
+                                    1. Mở Telegram và tìm bot <strong>@userinfobot</strong><br/>
+                                    2. Gửi tin nhắn <strong>/start</strong><br/>
+                                    3. Copy Chat ID và dán vào ô bên trái
+                                </div>
+                            </group>
+                        </group>
+
+                        <!-- Notebook with Tabs -->
+                        <notebook>
+                            <page string="📎 Tài liệu đính kèm" class="o_hr_animate">
+                                <group>
+                                    <group string="Ảnh đại diện">
+                                        <field name="photo_filename" invisible="1"/>
+                                    </group>
+                                    
+                                    <group string="CMND/CCCD Scan">
+                                        <field name="identity_scan" widget="image" 
+                                               style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/>
+                                        <field name="identity_scan_filename" invisible="1"/>
+                                    </group>
+                                    
+                                    <group string="Bằng cấp Scan">
+                                        <field name="diploma_scan" widget="image" 
+                                               style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/>
+                                        <field name="diploma_scan_filename" invisible="1"/>
+                                    </group>
+                                    
+                                    <group string="Hợp đồng Scan">
+                                        <field name="contract_scan" widget="image" 
+                                               style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/>
+                                        <field name="contract_scan_filename" invisible="1"/>
+                                    </group>
+                                    
+                                    <group string="Giấy khám sức khỏe">
+                                        <field name="health_check_scan" widget="image" 
+                                               style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);"/>
+                                        <field name="health_check_scan_filename" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <page string="📜 Lịch sử thay đổi" class="o_hr_animate">
+                                <field name="history_ids" readonly="1">
+                                    <tree string="Lịch sử" decoration-info="change_type == 'create'" 
+                                          decoration-success="change_type == 'update'" 
+                                          decoration-warning="change_type == 'delete'">
+                                        <field name="change_date" string="Ngày thay đổi"/>
+                                        <field name="change_type" string="Loại" widget="badge"/>
+                                        <field name="changed_by" string="Người thay đổi"/>
+                                        <field name="changes" string="Nội dung"/>
+                                        <field name="reason" string="Lý do"/>
+                                        <field name="approved_by" string="Người duyệt"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <page string="💬 Ghi chú" class="o_hr_animate">
+                                <field name="notes" placeholder="Thêm ghi chú về nhân viên..." 
+                                       style="min-height: 200px;"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

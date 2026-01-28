@@ -1,0 +1,674 @@
+/* ============================================== */
+/* 🎨 HR MODULE - MODERN & BEAUTIFUL UI          */
+/* ============================================== */
+
+/* ========== MODERN LIST VIEW ========== */
+.o_list_view.o_hr_employee_list_modern {
+    background: #f8f9fa;
+    border-radius: 12px;
+    overflow: visible;
+}
+
+.o_hr_employee_list_modern table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.o_hr_employee_list_modern thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.o_hr_employee_list_modern thead th {
+    color: white !important;
+    font-weight: 600 !important;
+    padding: 16px 12px !important;
+    border: none !important;
+    text-transform: uppercase;
+    font-size: 11px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.o_hr_employee_list_modern thead th:first-child {
+    padding-left: 24px !important;
+}
+
+.o_hr_employee_list_modern tbody {
+    background: white;
+}
+
+.o_hr_employee_list_modern .o_data_row {
+    background: white;
+    border-bottom: 1px solid #e9ecef;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.o_hr_employee_list_modern .o_data_row:hover {
+    background: linear-gradient(90deg, #f8f9ff 0%, #ffffff 100%);
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.08);
+    transform: scale(1.002);
+}
+
+.o_hr_employee_list_modern .o_data_cell {
+    vertical-align: middle !important;
+    padding: 14px 12px !important;
+    border: none !important;
+    font-size: 14px;
+}
+
+.o_hr_employee_list_modern .o_data_cell:first-child {
+    padding-left: 24px !important;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(2) {
+    font-weight: 500;
+    color: #1a202c;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(3) {
+    color: #667eea;
+    font-weight: 500;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(4) {
+    color: #4a5568;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(5) {
+    color: #718096;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(6) {
+    color: #4299e1;
+    text-decoration: none;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(6):hover {
+    text-decoration: underline;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(7) {
+    color: #a0aec0;
+    font-size: 13px;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(8) {
+    color: #718096;
+    font-size: 13px;
+}
+
+.o_hr_employee_list_modern .o_data_cell:nth-child(9) {
+    color: #cbd5e0;
+    font-size: 13px;
+    font-style: italic;
+}
+
+/* Checkbox styling */
+.o_hr_employee_list_modern .o_list_record_selector {
+    padding-left: 24px !important;
+}
+
+.o_hr_employee_list_modern .o_list_record_selector input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #667eea;
+}
+
+/* ========== MAIN DASHBOARD ========== */
+.o_hr_dashboard {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    min-height: 100vh;
+}
+
+/* ========== EMPLOYEE CARDS ========== */
+.o_hr_employee_card {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    border: none;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+}
+
+.o_hr_employee_card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.o_hr_employee_card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.2);
+}
+
+/* ========== EMPLOYEE AVATAR ========== */
+.o_hr_employee_avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid white;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    object-fit: cover;
+    transition: all 0.3s ease;
+}
+
+.o_hr_employee_avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* ========== EMPLOYEE INFO ========== */
+.o_hr_employee_name {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 15px 0 5px 0;
+}
+
+.o_hr_employee_job {
+    font-size: 16px;
+    color: #667eea;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.o_hr_employee_dept {
+    font-size: 14px;
+    color: #718096;
+    margin-bottom: 15px;
+}
+
+/* ========== STATUS BADGES ========== */
+.o_hr_status_badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.o_hr_status_badge.active {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.o_hr_status_badge.pending {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.o_hr_status_badge.inactive {
+    background: linear-gradient(135deg, #868f96 0%, #596164 100%);
+    color: white;
+}
+
+.o_hr_status_badge.terminated {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+}
+
+/* ========== STAT BOXES ========== */
+.o_hr_stat_box {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.o_hr_stat_box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.o_hr_stat_box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(102, 126, 234, 0.15);
+}
+
+.o_hr_stat_icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.o_hr_stat_number {
+    font-size: 42px;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 10px 0;
+}
+
+.o_hr_stat_label {
+    font-size: 14px;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* ========== KANBAN VIEW ENHANCEMENTS ========== */
+.o_kanban_view.o_hr_kanban_view {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    padding: 20px;
+    gap: 20px;
+    max-width: 100%;
+}
+
+.o_kanban_view.o_hr_kanban_view .o_kanban_record {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin: 0;
+    background: white;
+    width: 100% !important;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.o_kanban_view.o_hr_kanban_view .o_kanban_record:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.o_kanban_view.o_hr_kanban_view .oe_kanban_avatar {
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ========== FORM VIEW ENHANCEMENTS ========== */
+.o_form_view .o_group .o_group_col_6 {
+    padding: 12px;
+}
+
+.o_form_view .o_notebook {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.o_form_view .o_notebook .nav-tabs {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 0;
+}
+
+.o_form_view .o_notebook .nav-tabs .nav-link {
+    color: rgba(255, 255, 255, 0.7);
+    border: none;
+    padding: 12px 24px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.o_form_view .o_notebook .nav-tabs .nav-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+}
+
+.o_form_view .o_notebook .nav-tabs .nav-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ========== SECTION HEADERS ========== */
+.o_form_view .o_group .o_horizontal_separator {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    height: 3px;
+    border: none;
+    border-radius: 2px;
+    margin: 20px 0;
+}
+
+.o_form_view .o_group > tbody > tr > td.o_td_label {
+    font-weight: 600;
+    color: #4a5568;
+    padding-right: 16px;
+}
+
+/* ========== INPUT FIELDS ========== */
+.o_form_view .o_field_widget input,
+.o_form_view .o_field_widget select,
+.o_form_view .o_field_widget textarea {
+    border-radius: 8px;
+    border: 2px solid #e2e8f0;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.o_form_view .o_field_widget input:focus,
+.o_form_view .o_field_widget select:focus,
+.o_form_view .o_field_widget textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* ========== BUTTONS ========== */
+.o_form_view .oe_button_box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.o_form_view .oe_button_box .oe_stat_button {
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.o_form_view .oe_button_box .oe_stat_button:hover {
+    border-color: #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+}
+
+.o_form_view .oe_button_box .oe_stat_button .o_stat_info {
+    color: #667eea;
+    font-weight: 700;
+}
+
+/* ========== CHATTER ========== */
+.o_form_view .o_FormRenderer_chatterContainer {
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+/* ========== STATUSBAR ========== */
+.o_form_view .o_form_statusbar {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 0;
+    padding: 12px 20px;
+}
+
+.o_form_view .o_statusbar_status button {
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.o_form_view .o_statusbar_status button.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+}
+
+/* ========== TREE VIEW ========== */
+.o_list_view thead {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.o_list_view thead th {
+    color: white;
+    font-weight: 600;
+    padding: 14px 12px;
+    border: none;
+}
+
+.o_list_view tbody tr {
+    transition: all 0.2s ease;
+}
+
+.o_list_view tbody tr:hover {
+    background: rgba(102, 126, 234, 0.05);
+    transform: scale(1.01);
+}
+
+/* ========== CARDS LAYOUT ========== */
+.o_hr_cards_container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+/* ========== PROFILE CARD ========== */
+.o_hr_profile_card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.o_hr_profile_card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2);
+}
+
+.o_hr_profile_header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 24px;
+    text-align: center;
+    position: relative;
+}
+
+.o_hr_profile_header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: white;
+    border-radius: 30px 30px 0 0;
+}
+
+.o_hr_profile_body {
+    padding: 24px;
+}
+
+/* ========== INFO GRID ========== */
+.o_hr_info_grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.o_hr_info_item {
+    background: #f7fafc;
+    padding: 12px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.o_hr_info_label {
+    font-size: 12px;
+    color: #718096;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.o_hr_info_value {
+    font-size: 16px;
+    color: #2d3748;
+    font-weight: 600;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.o_hr_animate {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .o_hr_cards_container {
+        grid-template-columns: 1fr;
+    }
+    
+    .o_hr_info_grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .o_hr_stat_number {
+        font-size: 32px;
+    }
+}
+
+/* ========== ICON BADGES ========== */
+.o_hr_icon_badge {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.o_hr_icon_badge.primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.o_hr_icon_badge.success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.3);
+}
+
+.o_hr_icon_badge.warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+}
+
+.o_hr_icon_badge.info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+/* ========== SEARCH PANEL ========== */
+.o_search_panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.o_search_panel .o_search_panel_section {
+    border-radius: 8px;
+    margin: 8px;
+    padding: 8px;
+}
+
+.o_search_panel .o_search_panel_section_header {
+    color: #667eea;
+    font-weight: 700;
+    padding: 8px;
+    border-bottom: 2px solid #667eea;
+}
+
+/* ========== MENU STYLING ========== */
+.o_main_navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+}
+
+.o_app .o_app_name {
+    font-weight: 700;
+    color: #2d3748;
+}
+
+/* ========== CATEGORY CARDS ========== */
+.o_category_card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin: 10px;
+}
+
+.o_category_card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+/* ========== KANBAN CARD VARIANTS ========== */
+.oe_kanban_card {
+    min-height: 200px;
+}
+
+/* ========== STAT INDICATORS ========== */
+.o_stat_indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+}
+
+/* ========== EMPTY STATE ========== */
+.o_view_nocontent {
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.o_view_nocontent_smiling_face {
+    font-size: 48px;
+    color: #667eea;
+    margin-bottom: 20px;
+}
+

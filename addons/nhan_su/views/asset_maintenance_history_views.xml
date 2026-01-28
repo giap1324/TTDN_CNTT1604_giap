@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== KANBAN VIEW ==================== -->
+    <record id="view_asset_maintenance_history_kanban" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.kanban</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard" default_group_by="maintenance_type">
+                <field name="id"/>
+                <field name="asset_id"/>
+                <field name="maintenance_date"/>
+                <field name="maintenance_type"/>
+                <field name="actual_cost"/>
+                <field name="predicted_cost"/>
+                <field name="variance_percent"/>
+                <field name="state"/>
+                <field name="technician_id"/>
+                <field name="currency_id"/>
+                
+                <progressbar field="state" colors='{"draft": "info", "done": "success", "cancelled": "danger"}'/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header -->
+                            <div class="p-3 rounded-top" t-attf-style="background: linear-gradient(135deg, #{record.state.raw_value == 'done' ? '#11998e, #38ef7d' : record.state.raw_value == 'cancelled' ? '#485563, #29323c' : '#667eea, #764ba2'});">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <strong style="font-size: 13px;">
+                                        <field name="maintenance_date" widget="date"/>
+                                    </strong>
+                                    <span class="badge" style="background: rgba(255,255,255,0.25);">
+                                        <field name="maintenance_type"/>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="p-3">
+                                <div class="font-weight-bold mb-2" style="font-size: 14px;">
+                                    <i class="fa fa-cube text-muted mr-1"/>
+                                    <field name="asset_id"/>
+                                </div>
+                                
+                                <!-- Cost Comparison -->
+                                <div class="row mb-3">
+                                    <div class="col-6">
+                                        <div class="text-muted small">💰 Chi phí thực</div>
+                                        <div class="font-weight-bold" style="color: #667eea;">
+                                            <field name="actual_cost" widget="monetary"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">🤖 AI dự đoán</div>
+                                        <div class="font-weight-bold" style="color: #11998e;">
+                                            <field name="predicted_cost" widget="monetary"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Variance -->
+                                <div class="p-2 rounded mb-2" t-attf-style="background: #{Math.abs(record.variance_percent.raw_value) > 30 ? 'rgba(255,65,108,0.1)' : Math.abs(record.variance_percent.raw_value) > 15 ? 'rgba(240,147,251,0.1)' : 'rgba(17,153,142,0.1)'};">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small">📊 Chênh lệch</span>
+                                        <span class="font-weight-bold" t-attf-style="color: #{Math.abs(record.variance_percent.raw_value) > 30 ? '#ff416c' : Math.abs(record.variance_percent.raw_value) > 15 ? '#f5576c' : '#11998e'};">
+                                            <field name="variance_percent" widget="percentage"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Technician -->
+                                <div class="text-muted small" t-if="record.technician_id.raw_value">
+                                    <i class="fa fa-user-o mr-1"/>
+                                    <field name="technician_id"/>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="p-2 border-top">
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'info', 'done': 'success', 'cancelled': 'danger'}}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== TREE VIEW ==================== -->
+    <record id="view_asset_maintenance_history_tree" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.tree</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <tree string="Lịch Sử Bảo Trì" 
+                  decoration-success="state=='done'" 
+                  decoration-muted="state=='cancelled'"
+                  decoration-danger="variance_percent &gt; 30"
+                  decoration-warning="variance_percent &gt; 15 and variance_percent &lt;= 30"
+                  default_order="maintenance_date desc">
+                <header>
+                    <button name="action_update_predicted_cost" 
+                            string="🔄 Cập nhật dự đoán AI" 
+                            type="object" 
+                            class="btn-secondary"/>
+                </header>
+                <field name="maintenance_date" string="📅 Ngày"/>
+                <field name="asset_id" string="📦 Tài sản"/>
+                <field name="asset_category_id" string="📁 Danh mục" optional="show"/>
+                <field name="maintenance_type" string="🔧 Loại" widget="badge"/>
+                <field name="actual_cost" string="💰 Chi phí thực" widget="monetary" sum="Tổng"/>
+                <field name="predicted_cost" string="🤖 AI dự đoán" widget="monetary" sum="Tổng dự đoán"/>
+                <field name="variance_percent" string="📊 Chênh lệch" widget="percentage"/>
+                <field name="technician_id" string="👤 KTV" optional="show"/>
+                <field name="result" string="✅ Kết quả" optional="show"/>
+                <field name="state" string="📊 Trạng thái" widget="badge" 
+                       decoration-success="state=='done'" 
+                       decoration-danger="state=='cancelled'"
+                       decoration-info="state=='draft'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== FORM VIEW ==================== -->
+    <record id="view_asset_maintenance_history_form" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.form</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <form string="Lịch Sử Bảo Trì">
+                <header>
+                    <button name="action_done" string="✅ Hoàn thành" type="object" states="draft" class="btn-primary"/>
+                    <button name="action_update_predicted_cost" string="🔄 Cập nhật AI" type="object" class="btn-secondary"/>
+                    <button name="action_cancel" string="❌ Hủy" type="object" states="draft" confirm="Bạn có chắc muốn hủy?" class="btn-warning"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(action_asset_maintenance_prediction)d" 
+                                type="action" 
+                                class="oe_stat_button" 
+                                icon="fa-robot"
+                                context="{'search_default_asset_id': asset_id}">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_text">AI Predictions</span>
+                            </div>
+                        </button>
+                    </div>
+                    
+                    <div class="oe_title">
+                        <label for="asset_id" class="oe_edit_only"/>
+                        <h1>
+                            <field name="asset_id" options="{'no_create': True}" placeholder="Chọn tài sản"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- AI Comparison Cards -->
+                    <div class="row mt-3 mb-4" attrs="{'invisible': [('predicted_cost', '=', 0)]}">
+                        <div class="col-md-4">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #667eea;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">💰 CHI PHÍ THỰC TẾ</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #667eea;">
+                                        <field name="actual_cost" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #11998e;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">🤖 AI DỰ ĐOÁN</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #11998e;">
+                                        <field name="predicted_cost" widget="monetary"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #f5576c;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">📊 CHÊNH LỆCH</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #f5576c;">
+                                        <field name="variance_percent" widget="percentage"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <group>
+                        <group string="📋 Thông tin bảo trì">
+                            <field name="asset_category_id" readonly="1"/>
+                            <field name="maintenance_date"/>
+                            <field name="maintenance_type" widget="radio"/>
+                            <field name="technician_id"/>
+                            <field name="duration_hours" widget="float_time"/>
+                        </group>
+                        <group string="💰 Chi phí">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="actual_cost" widget="monetary" attrs="{'invisible': [('predicted_cost', '!=', 0)]}"/>
+                            <field name="parts_cost" widget="monetary"/>
+                            <field name="labor_cost" widget="monetary"/>
+                            <field name="result" widget="radio"/>
+                        </group>
+                    </group>
+                    
+                    <group string="🔗 Liên kết AI" attrs="{'invisible': [('prediction_id', '=', False)]}">
+                        <group>
+                            <field name="prediction_id" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="cost_variance" widget="monetary" readonly="1"/>
+                            <field name="next_predicted_date" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📝 Chi tiết công việc" name="details">
+                            <field name="description" placeholder="Mô tả chi tiết công việc bảo trì đã thực hiện..." nolabel="1"/>
+                        </page>
+                        <page string="🔧 Phụ tùng thay thế" name="parts">
+                            <field name="parts_replaced" placeholder="Liệt kê các phụ tùng đã thay thế và giá tiền..." nolabel="1"/>
+                        </page>
+                        <page string="📌 Ghi chú" name="notes">
+                            <field name="notes" placeholder="Các ghi chú bổ sung..." nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_asset_maintenance_history_search" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.search</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <search string="Tìm Lịch Sử Bảo Trì">
+                <field name="asset_id"/>
+                <field name="maintenance_type"/>
+                <field name="technician_id"/>
+                <filter string="Hôm nay" name="today" domain="[('maintenance_date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter string="Tuần này" name="this_week" domain="[('maintenance_date', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                <filter string="Tháng này" name="this_month" domain="[('maintenance_date', '&gt;=', (context_today().replace(day=1)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter string="Hoàn thành" name="done" domain="[('state', '=', 'done')]"/>
+                <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                <separator/>
+                <filter string="Bảo trì định kỳ" name="preventive" domain="[('maintenance_type', '=', 'preventive')]"/>
+                <filter string="Sửa chữa" name="corrective" domain="[('maintenance_type', '=', 'corrective')]"/>
+                <separator/>
+                <filter string="Có dự đoán AI" name="has_prediction" domain="[('predicted_cost', '>', 0)]"/>
+                <filter string="Chênh lệch cao (&gt;20%)" name="high_variance" domain="[('variance_percent', '&gt;', 20)]"/>
+                <filter string="Chênh lệch rất cao (&gt;50%)" name="very_high_variance" domain="[('variance_percent', '&gt;', 50)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Tài sản" name="group_asset" context="{'group_by': 'asset_id'}"/>
+                    <filter string="Danh mục" name="group_category" context="{'group_by': 'asset_category_id'}"/>
+                    <filter string="Loại bảo trì" name="group_type" context="{'group_by': 'maintenance_type'}"/>
+                    <filter string="Kỹ thuật viên" name="group_technician" context="{'group_by': 'technician_id'}"/>
+                    <filter string="Tháng" name="group_month" context="{'group_by': 'maintenance_date:month'}"/>
+                    <filter string="Trạng thái" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- ==================== GRAPH VIEW ==================== -->
+    <record id="view_asset_maintenance_history_graph" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.graph</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <graph string="📊 Biểu đồ chi phí bảo trì" type="bar" stacked="True">
+                <field name="maintenance_date" interval="month" type="row"/>
+                <field name="maintenance_type" type="col"/>
+                <field name="actual_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ==================== PIVOT VIEW ==================== -->
+    <record id="view_asset_maintenance_history_pivot" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.pivot</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <pivot string="📈 Phân tích chi phí">
+                <field name="asset_category_id" type="row"/>
+                <field name="maintenance_type" type="col"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="predicted_cost" type="measure"/>
+                <field name="variance_percent" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ==================== CALENDAR VIEW ==================== -->
+    <record id="view_asset_maintenance_history_calendar" model="ir.ui.view">
+        <field name="name">asset.maintenance.history.calendar</field>
+        <field name="model">asset.maintenance.history</field>
+        <field name="arch" type="xml">
+            <calendar string="📅 Lịch bảo trì" date_start="maintenance_date" color="maintenance_type" mode="month" quick_add="False">
+                <field name="asset_id"/>
+                <field name="maintenance_type"/>
+                <field name="actual_cost" widget="monetary"/>
+                <field name="technician_id"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ==================== ACTION ==================== -->
+    <record id="action_asset_maintenance_history" model="ir.actions.act_window">
+        <field name="name">📋 Lịch Sử Bảo Trì</field>
+        <field name="res_model">asset.maintenance.history</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="search_view_id" ref="view_asset_maintenance_history_search"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-history mr-2"/> Lịch Sử Bảo Trì
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px;">
+                        Theo dõi và so sánh chi phí bảo trì thực tế với dự đoán AI
+                    </p>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-4">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #667eea;">
+                            <i class="fa fa-pencil-square-o fa-2x mb-2" style="color: #667eea;"/>
+                            <h5>Ghi nhận</h5>
+                            <p class="text-muted small mb-0">Ghi lại mọi hoạt động bảo trì</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #11998e;">
+                            <i class="fa fa-balance-scale fa-2x mb-2" style="color: #11998e;"/>
+                            <h5>So sánh</h5>
+                            <p class="text-muted small mb-0">Đối chiếu với dự đoán AI</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #f5576c;">
+                            <i class="fa fa-graduation-cap fa-2x mb-2" style="color: #f5576c;"/>
+                            <h5>Học hỏi</h5>
+                            <p class="text-muted small mb-0">AI học từ dữ liệu thực</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+    <!-- Menu -->
+    <menuitem id="menu_asset_maintenance_history"
+              name="📋 Lịch Sử Bảo Trì"
+              parent="nhan_su.menu_asset_root"
+              action="action_asset_maintenance_history"
+              sequence="25"/>
+</odoo>

@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== EMPLOYEE KANBAN VIEW ==================== -->
+    <record id="view_hr_employee_extended_kanban" model="ir.ui.view">
+        <field name="name">hr.employee.extended.kanban</field>
+        <field name="model">hr.employee.extended</field>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard">
+                <field name="id"/>
+                <field name="name"/>
+                <field name="employee_code"/>
+                <field name="job_title"/>
+                <field name="department_id"/>
+                <field name="phone"/>
+                <field name="work_email"/>
+                <field name="photo"/>
+                <field name="state"/>
+                <field name="hire_date"/>
+                <field name="years_of_service"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click" t-attf-style="background: linear-gradient(135deg, rgba(102,126,234,0.05) 0%, rgba(118,75,162,0.05) 100%);">
+                            <div class="o_kanban_image">
+                                <img t-att-src="kanban_image('hr.employee.extended', 'photo', record.id.raw_value)" alt="Photo" style="border-radius: 50%; border: 3px solid #667eea;"/>
+                            </div>
+                            
+                            <div class="oe_kanban_details">
+                                <!-- Header -->
+                                <div class="o_kanban_record_top mb-2">
+                                    <div class="o_kanban_record_headings">
+                                        <strong class="o_kanban_record_title" style="font-size: 16px;">
+                                            <field name="name"/>
+                                        </strong>
+                                        <div class="text-muted small">
+                                            <i class="fa fa-id-badge mr-1"/> <field name="employee_code"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Body -->
+                                <div class="o_kanban_record_body">
+                                    <div class="mb-2">
+                                        <span class="badge" t-attf-style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 11px;">
+                                            <field name="job_title"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="text-muted small mb-1">
+                                        <i class="fa fa-phone mr-1"/> <field name="phone"/>
+                                    </div>
+                                    <div class="text-muted small mb-1">
+                                        <i class="fa fa-envelope mr-1"/> <field name="work_email"/>
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="fa fa-calendar mr-1"/> 
+                                        <field name="years_of_service"/> năm công tác
+                                    </div>
+                                </div>
+                                
+                                <!-- Footer -->
+                                <div class="o_kanban_record_bottom mt-3">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'pending': 'warning', 'active': 'success', 'inactive': 'info', 'terminated': 'danger'}}"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== EMPLOYEE TREE VIEW PRO ==================== -->
+    <record id="view_hr_employee_extended_tree_pro" model="ir.ui.view">
+        <field name="name">hr.employee.extended.tree.pro</field>
+        <field name="model">hr.employee.extended</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="Danh sách nhân viên" 
+                  decoration-success="state=='active'" 
+                  decoration-warning="state=='pending'"
+                  decoration-muted="state=='inactive'"
+                  decoration-danger="state=='terminated'"
+                  default_order="employee_code asc">
+                <field name="photo" widget="image" options="{'size': [40, 40]}"/>
+                <field name="employee_code" string="👤 Mã NV"/>
+                <field name="name" string="📝 Họ tên"/>
+                <field name="department_id" string="🏢 Phòng ban" optional="show"/>
+                <field name="job_title" string="💼 Chức vụ"/>
+                <field name="phone" string="📞 Điện thoại" optional="show"/>
+                <field name="work_email" string="📧 Email" optional="show"/>
+                <field name="hire_date" string="📅 Ngày vào" optional="show"/>
+                <field name="years_of_service" string="⏱️ Thâm niên (năm)" optional="show"/>
+                <field name="state" string="📊 Trạng thái" widget="badge" 
+                       decoration-success="state=='active'" 
+                       decoration-warning="state=='pending'"
+                       decoration-info="state=='inactive'"
+                       decoration-danger="state=='terminated'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== EMPLOYEE FORM VIEW PRO ==================== -->
+    <record id="view_hr_employee_extended_form_pro" model="ir.ui.view">
+        <field name="name">hr.employee.extended.form.pro</field>
+        <field name="model">hr.employee.extended</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Thông tin nhân viên">
+                <header>
+                    <button name="action_activate_profile" string="✅ Kích hoạt" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                    <button name="action_deactivate_profile" string="⏸️ Tạm ngưng" type="object" class="btn-warning"
+                            attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                    <button name="action_terminate_profile" string="🚫 Nghỉ việc" type="object" class="btn-danger"
+                            attrs="{'invisible': [('state', '==', 'terminated')]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,active"/>
+                </header>
+                <sheet>
+                    <!-- Title Section -->
+                    <div class="oe_title">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <field name="photo" widget="image" class="oe_avatar" options="{'size': [120, 120]}" style="border-radius: 50%; border: 4px solid #667eea;"/>
+                            </div>
+                            <div class="col-md-10">
+                                <h1 class="mb-2">
+                                    <field name="name" placeholder="Họ và tên đầy đủ" style="color: #667eea;"/>
+                                </h1>
+                                <h3 class="text-muted">
+                                    <field name="job_title" placeholder="Chức vụ"/>
+                                </h3>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Info Cards -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #667eea;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">👤 MÃ NHÂN VIÊN</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #667eea;">
+                                        <field name="employee_code"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #11998e;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">⏱️ THÂM NIÊN</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #11998e;">
+                                        <field name="years_of_service"/> năm
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #f5576c;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">🎂 TUỔI</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #f5576c;">
+                                        <field name="age"/> tuổi
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #4facfe;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">📅 NGÀY VÀO</div>
+                                    <div style="font-size: 16px; font-weight: bold; color: #4facfe;">
+                                        <field name="hire_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Info -->
+                    <group class="mt-4">
+                        <group string="📋 Thông tin cá nhân">
+                            <field name="date_of_birth"/>
+                            <field name="gender" widget="radio"/>
+                            <field name="marital_status"/>
+                            <field name="ethnicity"/>
+                            <field name="religion"/>
+                        </group>
+                        <group string="🆔 CMND/CCCD">
+                            <field name="identity_number"/>
+                            <field name="identity_issued_date"/>
+                            <field name="identity_issued_place"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="📍 Địa chỉ">
+                            <field name="permanent_address" placeholder="Địa chỉ thường trú..."/>
+                            <field name="current_address" placeholder="Địa chỉ tạm trú..."/>
+                        </group>
+                        <group string="📞 Liên hệ">
+                            <field name="phone"/>
+                            <field name="personal_email"/>
+                            <field name="work_email" readonly="1"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="💼 Công việc">
+                            <field name="department_id"/>
+                            <field name="manager_id"/>
+                            <field name="contract_type"/>
+                            <field name="work_location"/>
+                            <field name="work_shift"/>
+                        </group>
+                        <group string="🎓 Học vấn">
+                            <field name="education_level"/>
+                            <field name="major"/>
+                            <field name="school"/>
+                            <field name="graduation_year"/>
+                        </group>
+                    </group>
+                    
+                    <group string="🏆 Kỹ năng &amp; Chứng chỉ">
+                        <field name="certificates" placeholder="Các chứng chỉ..."/>
+                        <field name="special_skills" placeholder="Kỹ năng đặc biệt..."/>
+                    </group>
+                    
+                    <group string="🚨 Liên hệ khẩn cấp">
+                        <group>
+                            <field name="emergency_contact_name"/>
+                            <field name="emergency_contact_relationship"/>
+                        </group>
+                        <group>
+                            <field name="emergency_contact_phone"/>
+                            <field name="emergency_contact_address"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📎 Tài liệu" name="documents">
+                            <group>
+                                <group string="Ảnh CMND/CCCD">
+                                    <field name="identity_scan" widget="image" nolabel="1"/>
+                                </group>
+                                <group string="Bằng cấp">
+                                    <field name="diploma_scan" widget="image" nolabel="1"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Hợp đồng">
+                                    <field name="contract_scan" widget="image" nolabel="1"/>
+                                </group>
+                                <group string="Giấy khám sức khỏe">
+                                    <field name="health_check_scan" widget="image" nolabel="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="📜 Lịch sử thay đổi" name="history">
+                            <field name="history_ids" readonly="1">
+                                <tree>
+                                    <field name="change_date"/>
+                                    <field name="change_type"/>
+                                    <field name="changed_by"/>
+                                    <field name="changes"/>
+                                    <field name="reason"/>
+                                    <field name="approved_by"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="👤 Tài khoản hệ thống" name="account">
+                            <group>
+                                <field name="user_id" readonly="1"/>
+                                <field name="username" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== CALENDAR VIEW ==================== -->
+    <record id="view_hr_employee_extended_calendar" model="ir.ui.view">
+        <field name="name">hr.employee.extended.calendar</field>
+        <field name="model">hr.employee.extended</field>
+        <field name="arch" type="xml">
+            <calendar string="📅 Lịch sinh nhật" date_start="date_of_birth" color="department_id" mode="month">
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="age"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ==================== UPDATE ACTION ==================== -->
+    <record id="action_hr_employee_extended" model="ir.actions.act_window">
+        <field name="name">👥 Quản lý nhân sự</field>
+        <field name="res_model">hr.employee.extended</field>
+        <field name="view_mode">kanban,tree,form,calendar</field>
+        <field name="search_view_id" ref="view_hr_employee_extended_search"/>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-users mr-2"/> Quản lý nhân sự
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px;">
+                        Quản lý hồ sơ nhân viên chuyên nghiệp và hiện đại
+                    </p>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

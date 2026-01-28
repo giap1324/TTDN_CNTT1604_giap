@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Asset Tree View -->
+        <record id="view_asset_tree" model="ir.ui.view">
+            <field name="name">asset.tree</field>
+            <field name="model">asset</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="asset_code"/>
+                    <field name="name"/>
+                    <field name="category_id"/>
+                    <field name="location_id"/>
+                    <field name="state" widget="badge" decoration-success="state=='available'" decoration-warning="state=='in_use'" decoration-danger="state in ['maintenance','damaged']"/>
+                    <field name="assigned_to_id"/>
+                    <field name="current_value"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Asset Form View -->
+        <record id="view_asset_form" model="ir.ui.view">
+            <field name="name">asset.form</field>
+            <field name="model">asset</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button name="action_assign" string="Gán tài sản" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'available')]}"/>
+                        <button name="action_maintenance" string="Bảo trì" type="object" attrs="{'invisible': [('state', 'in', ['maintenance', 'disposed'])]}"/>
+                        <button name="action_return" string="Trả về kho" type="object" attrs="{'invisible': [('state', '!=', 'in_use')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="available,in_use,maintenance"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Tên tài sản"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Thông tin cơ bản">
+                                <field name="asset_code"/>
+                                <field name="category_id"/>
+                                <field name="location_id"/>
+                                <field name="brand"/>
+                                <field name="model"/>
+                                <field name="serial_number"/>
+                            </group>
+                            <group string="Giá trị">
+                                <field name="purchase_date"/>
+                                <field name="purchase_price"/>
+                                <field name="current_value" readonly="1"/>
+                                <field name="warranty_expiry"/>
+                                <field name="currency_id" invisible="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Quản lý">
+                                <field name="manager_id"/>
+                                <field name="assigned_to_id"/>
+                            </group>
+                            <group>
+                                <field name="image" widget="image" class="oe_avatar"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lịch sử sử dụng">
+                                <field name="usage_history_ids" nolabel="1">
+                                    <tree>
+                                        <field name="employee_id"/>
+                                        <field name="date_from"/>
+                                        <field name="date_to"/>
+                                        <field name="purpose"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Tài liệu">
+                                <field name="documents" widget="many2many_binary"/>
+                            </page>
+                        </notebook>
+                        <group colspan="4">
+                            <field name="notes" nolabel="1"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Asset Search View -->
+        <record id="view_asset_search" model="ir.ui.view">
+            <field name="name">asset.search</field>
+            <field name="model">asset</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="asset_code"/>
+                    <field name="category_id"/>
+                    <field name="location_id"/>
+                    <field name="assigned_to_id"/>
+                    <filter string="Sẵn sàng" name="available" domain="[('state', '=', 'available')]"/>
+                    <filter string="Đang sử dụng" name="in_use" domain="[('state', '=', 'in_use')]"/>
+                    <filter string="Bảo trì" name="maintenance" domain="[('state', '=', 'maintenance')]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Danh mục" name="category" context="{'group_by': 'category_id'}"/>
+                        <filter string="Vị trí" name="location" context="{'group_by': 'location_id'}"/>
+                        <filter string="Trạng thái" name="state" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_asset" model="ir.actions.act_window">
+            <field name="name">Quản lý tài sản</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">asset</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_asset_search"/>
+        </record>
+    </data>
+</odoo>

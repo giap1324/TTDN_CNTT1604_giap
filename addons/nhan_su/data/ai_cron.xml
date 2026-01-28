@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== AUTO TRAIN ON STARTUP ==================== -->
+    <function model="asset.maintenance.prediction" name="_auto_train_on_startup"/>
+    
+    <!-- ==================== SCHEDULED ACTIONS ==================== -->
+    
+    <!-- Cron: Train lại XGBoost model hàng tuần -->
+    <record id="ir_cron_retrain_xgboost" model="ir.cron">
+        <field name="name">🤖 AI: Train lại XGBoost Model (Hàng tuần)</field>
+        <field name="model_id" ref="model_asset_maintenance_prediction"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_retrain_model()</field>
+        <field name="interval_number">7</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall">False</field>
+    </record>
+
+    <!-- Cron: Auto-train khi có dữ liệu mới (hàng ngày) -->
+    <record id="ir_cron_auto_train_xgboost_on_new_data" model="ir.cron">
+        <field name="name">🤖 AI: Auto-train khi có dữ liệu mới (Hàng ngày)</field>
+        <field name="model_id" ref="model_asset_maintenance_prediction"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_auto_train_model()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall">False</field>
+    </record>
+    
+    <!-- Cron: Tự động dự đoán cho tài sản mới (hàng ngày) -->
+    <record id="ir_cron_auto_predict_new_assets" model="ir.cron">
+        <field name="name">🤖 AI: Dự đoán tự động cho tài sản mới (Hàng ngày)</field>
+        <field name="model_id" ref="model_asset_maintenance_prediction"/>
+        <field name="state">code</field>
+        <field name="code">model._cron_predict_new_assets()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall">False</field>
+    </record>
+
+    <!-- Cron: Tự động lên lịch bảo trì + gửi Telegram (hàng ngày) -->
+    <record id="ir_cron_auto_schedule_maintenance" model="ir.cron">
+        <field name="name">🛠️ AI: Lên lịch bảo trì & Telegram (Hàng ngày)</field>
+        <field name="model_id" ref="model_asset_maintenance_prediction"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_auto_schedule_maintenance()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+        <field name="doall">False</field>
+    </record>
+    
+</odoo>

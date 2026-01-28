@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Email Template for Welcome Message -->
+        <record id="email_template_welcome" model="mail.template">
+            <field name="name">Chào mừng nhân viên mới</field>
+            <field name="model_id" ref="model_hr_employee_extended"/>
+            <field name="subject">Chào mừng bạn gia nhập công ty ${object.name}</field>
+            <field name="email_from">${object.work_email or 'hr@company.com'}</field>
+            <field name="email_to">${object.work_email}</field>
+            <field name="body_html"><![CDATA[
+<div style="margin: 0px; padding: 0px;">
+    <p>Kính chào ${object.name},</p>
+
+    <p>Chúc mừng bạn đã chính thức trở thành thành viên của Công ty chúng tôi!</p>
+
+    <p>Thông tin tài khoản đăng nhập hệ thống của bạn:</p>
+    <ul>
+        <li><strong>Tên đăng nhập:</strong> ${object.username}</li>
+        <li><strong>Mật khẩu tạm thời:</strong> ${object.password_temp}</li>
+        <li><strong>Email công ty:</strong> ${object.work_email}</li>
+    </ul>
+
+    <p><strong>Lưu ý quan trọng:</strong></p>
+    <ul>
+        <li>Vui lòng đăng nhập và đổi mật khẩu trong lần đầu tiên sử dụng.</li>
+        <li>Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số.</li>
+        <li>Giữ thông tin đăng nhập bảo mật và không chia sẻ với người khác.</li>
+    </ul>
+
+    <p>Nếu bạn có bất kỳ câu hỏi nào, vui lòng liên hệ với bộ phận Nhân sự.</p>
+
+    <p>Chúc bạn có những trải nghiệm làm việc tuyệt vời tại công ty!</p>
+
+    <p>Trân trọng,<br/>
+    Bộ phận Nhân sự<br/>
+    Công ty TNHH ABC</p>
+</div>
+            ]]></field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_don_vi_form" model="ir.ui.view">
+            <field name="name">don_vi</field>
+            <field name="model">don_vi</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ten_don_vi" placeholder="Tên đơn vị"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="ma_don_vi"/>
+                                <field name="mo_ta"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Danh sách nhân viên">
+                                <field name="nhan_vien_ids" nolabel="1">
+                                    <tree>
+                                        <field name="employee_code"/>
+                                        <field name="name"/>
+                                        <field name="job_title"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_don_vi_tree" model="ir.ui.view">
+            <field name="name">don_vi</field>
+            <field name="model">don_vi</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ma_don_vi"/>
+                    <field name="ten_don_vi"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="don_vi_search">
+            <field name="model">don_vi</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ma_don_vi"/>
+                    <field name="ten_don_vi"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_don_vi" model="ir.actions.act_window">
+            <field name="name">Đơn vị</field>
+            <field name="res_model">don_vi</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "don_vi_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

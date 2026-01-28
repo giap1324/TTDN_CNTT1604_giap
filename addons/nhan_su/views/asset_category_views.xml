@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Asset Category Tree View -->
+        <record id="view_asset_category_tree" model="ir.ui.view">
+            <field name="name">asset.category.tree</field>
+            <field name="model">asset.category</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="asset_ids" widget="many2many_tags"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Asset Category Form View -->
+        <record id="view_asset_category_form" model="ir.ui.view">
+            <field name="name">asset.category.form</field>
+            <field name="model">asset.category</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Tên danh mục"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="code"/>
+                                <field name="description"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Danh sách tài sản">
+                                <field name="asset_ids" nolabel="1">
+                                    <tree>
+                                        <field name="asset_code"/>
+                                        <field name="name"/>
+                                        <field name="state"/>
+                                        <field name="assigned_to_id"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Asset Category Search View -->
+        <record id="view_asset_category_search" model="ir.ui.view">
+            <field name="name">asset.category.search</field>
+            <field name="model">asset.category</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="code"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_asset_category" model="ir.actions.act_window">
+            <field name="name">Danh mục tài sản</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">asset.category</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_asset_category_search"/>
+        </record>
+    </data>
+</odoo>

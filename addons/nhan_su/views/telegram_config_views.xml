@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== TELEGRAM SETTINGS ==================== -->
+    <record id="view_nhan_su_config_settings_form" model="ir.ui.view">
+        <field name="name">res.config.settings.form.inherit.telegram</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="app_settings_block" data_key="nhan_su" string="Telegram Integration">
+                    <h2>📱 Telegram Integration</h2>
+                    
+                    <div class="row mt16 o_settings_container">
+                        <div class="col-12 col-lg-6 o_setting_box">
+                            <div class="o_setting_left_pane">
+                                <field name="telegram_notification_enabled"/>
+                            </div>
+                            <div class="o_setting_right_pane">
+                                <label for="telegram_notification_enabled"/>
+                                <div class="text-muted">
+                                    Tự động gửi thông báo qua Telegram khi có đặt phòng mới
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-lg-6 o_setting_box" 
+                             attrs="{'invisible': [('telegram_notification_enabled', '=', False)]}">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="telegram_bot_token" string="Bot Token"/>
+                                <div class="content-group">
+                                    <field name="telegram_bot_token" 
+                                           placeholder="123456789:ABCdefGHIjklMNOpqrsTUVwxyz"
+                                           password="True"
+                                           class="oe_inline"/>
+                                    <div class="text-muted mt8">
+                                        <i class="fa fa-info-circle"/> 
+                                        Lấy Bot Token từ <a href="https://t.me/BotFather" target="_blank">@BotFather</a>
+                                        <br/>
+                                        1. Gửi lệnh /newbot cho @BotFather
+                                        <br/>
+                                        2. Đặt tên cho bot
+                                        <br/>
+                                        3. Copy token và paste vào đây
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 col-lg-6 o_setting_box"
+                             attrs="{'invisible': [('telegram_notification_enabled', '=', False)]}">
+                            <div class="o_setting_left_pane"/>
+                            <div class="o_setting_right_pane">
+                                <label for="telegram_test_chat_id" string="Test Chat ID"/>
+                                <div class="content-group">
+                                    <field name="telegram_test_chat_id" 
+                                           placeholder="123456789"
+                                           class="oe_inline"/>
+                                    <div class="text-muted mt8">
+                                        <i class="fa fa-info-circle"/> 
+                                        Lấy Chat ID từ <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a>
+                                        <br/>
+                                        Hoặc gửi tin nhắn cho bot và check webhook
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12"
+                             attrs="{'invisible': [('telegram_notification_enabled', '=', False)]}">
+                            <div class="o_setting_box">
+                                <button name="action_test_telegram_connection" 
+                                        string="🔍 Test Connection" 
+                                        type="object" 
+                                        class="btn btn-primary mr-2"
+                                        attrs="{'invisible': [('telegram_bot_token', '=', False)]}"/>
+                                <button name="action_send_test_notification" 
+                                        string="📤 Gửi Test Notification" 
+                                        type="object" 
+                                        class="btn btn-secondary"
+                                        attrs="{'invisible': [('telegram_bot_token', '=', False)]}"/>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt32">
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                <h4 class="alert-heading">
+                                    <i class="fa fa-lightbulb-o"/> Hướng dẫn cấu hình Telegram
+                                </h4>
+                                <hr/>
+                                <p><strong>Bước 1:</strong> Tạo Telegram Bot</p>
+                                <ul>
+                                    <li>Mở Telegram và tìm <code>@BotFather</code></li>
+                                    <li>Gửi lệnh <code>/newbot</code></li>
+                                    <li>Đặt tên bot (VD: HR Notification Bot)</li>
+                                    <li>Đặt username bot (VD: @company_hr_bot)</li>
+                                    <li>Copy Bot Token và paste vào trường "Bot Token" ở trên</li>
+                                </ul>
+                                
+                                <p class="mt-3"><strong>Bước 2:</strong> Lấy Chat ID của nhân viên</p>
+                                <ul>
+                                    <li>Nhân viên mở Telegram và tìm <code>@userinfobot</code></li>
+                                    <li>Gửi bất kỳ tin nhắn nào</li>
+                                    <li>Bot sẽ trả về Chat ID (dạng số)</li>
+                                    <li>Copy Chat ID và điền vào hồ sơ nhân viên</li>
+                                </ul>
+                                
+                                <p class="mt-3"><strong>Bước 3:</strong> Bật thông báo</p>
+                                <ul>
+                                    <li>Bật "Bật thông báo Telegram" ở trên</li>
+                                    <li>Click "Test Connection" để kiểm tra</li>
+                                    <li>Nếu thành công, hệ thống sẽ tự động gửi thông báo khi có đặt phòng</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

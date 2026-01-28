@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ============================================== -->
+        <!-- 🎨 MODERN KANBAN VIEW - EMPLOYEE CARDS        -->
+        <!-- ============================================== -->
+        <record id="view_hr_employee_extended_kanban_modern" model="ir.ui.view">
+            <field name="name">hr.employee.extended.kanban.modern</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <kanban class="o_hr_kanban_view" sample="1">
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="employee_code"/>
+                    <field name="department_id"/>
+                    <field name="job_title"/>
+                    <field name="phone"/>
+                    <field name="work_email"/>
+                    <field name="state"/>
+                    <field name="photo"/>
+                    <field name="hire_date"/>
+                    <field name="age"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="o_hr_employee_card oe_kanban_global_click">
+                                <!-- Status Indicator -->
+                                <div class="ribbon ribbon-top-right" t-att-class="'o_hr_status_badge ' + record.state.raw_value">
+                                    <span t-if="record.state.raw_value == 'active'">✓ Hoạt động</span>
+                                    <span t-if="record.state.raw_value == 'pending'">⏳ Chờ duyệt</span>
+                                    <span t-if="record.state.raw_value == 'inactive'">⊗ Tạm ngưng</span>
+                                    <span t-if="record.state.raw_value == 'terminated'">✗ Nghỉ việc</span>
+                                </div>
+                                
+                                <!-- Employee Photo -->
+                                <div class="text-center mb-3">
+                                    <img t-if="record.photo.raw_value" 
+                                         t-att-src="kanban_image('hr.employee.extended', 'photo', record.id.raw_value)" 
+                                         class="o_hr_employee_avatar"
+                                         alt="Avatar"/>
+                                    <div t-else="" class="o_hr_employee_avatar d-flex align-items-center justify-content-center" 
+                                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-size: 48px; font-weight: 700;">
+                                        <t t-esc="record.name.raw_value[0].toUpperCase()"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Employee Info -->
+                                <div class="text-center">
+                                    <div class="o_hr_employee_name">
+                                        <t t-esc="record.name.raw_value"/>
+                                    </div>
+                                    <div class="o_hr_employee_job">
+                                        <i class="fa fa-briefcase"/> <t t-esc="record.job_title.raw_value or 'Chưa có chức vụ'"/>
+                                    </div>
+                                    <div class="o_hr_employee_dept">
+                                        <i class="fa fa-building-o"/> <t t-esc="record.department_id.raw_value or 'Chưa có phòng ban'"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Divider -->
+                                <hr style="border-top: 2px solid #e2e8f0; margin: 15px 0;"/>
+                                
+                                <!-- Employee Details Grid -->
+                                <div class="o_hr_info_grid" style="grid-template-columns: 1fr;">
+                                    <div class="o_hr_info_item">
+                                        <div class="o_hr_info_label">
+                                            <i class="fa fa-id-card-o"/> Mã NV
+                                        </div>
+                                        <div class="o_hr_info_value">
+                                            <t t-esc="record.employee_code.raw_value"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_hr_info_item" t-if="record.phone.raw_value">
+                                        <div class="o_hr_info_label">
+                                            <i class="fa fa-phone"/> Điện thoại
+                                        </div>
+                                        <div class="o_hr_info_value">
+                                            <t t-esc="record.phone.raw_value"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_hr_info_item" t-if="record.work_email.raw_value">
+                                        <div class="o_hr_info_label">
+                                            <i class="fa fa-envelope-o"/> Email
+                                        </div>
+                                        <div class="o_hr_info_value" style="font-size: 13px; word-break: break-word;">
+                                            <t t-esc="record.work_email.raw_value"/>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_hr_info_item" t-if="record.age.raw_value">
+                                        <div class="o_hr_info_label">
+                                            <i class="fa fa-birthday-cake"/> Tuổi
+                                        </div>
+                                        <div class="o_hr_info_value">
+                                            <t t-esc="record.age.raw_value"/> tuổi
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_hr_info_item" t-if="record.hire_date.raw_value">
+                                        <div class="o_hr_info_label">
+                                            <i class="fa fa-calendar-check-o"/> Ngày vào
+                                        </div>
+                                        <div class="o_hr_info_value">
+                                            <t t-esc="record.hire_date.raw_value"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+
+        <!-- ============================================== -->
+        <!--  ENHANCED LIST VIEW - MODERN STYLE           -->
+        <!-- ============================================== -->
+        <record id="view_hr_employee_extended_tree_modern" model="ir.ui.view">
+            <field name="name">hr.employee.extended.tree.modern</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="priority">1</field>
+            <field name="arch" type="xml">
+                <tree string="Danh sách nhân viên" class="o_hr_employee_list_modern" create="true" delete="true">
+                    <field name="employee_code" string="Mã NV"/>
+                    <field name="name" string="Họ tên"/>
+                    <field name="department_id" string="Phòng ban"/>
+                    <field name="job_title" string="Chức vụ"/>
+                    <field name="phone" string="Điện thoại" widget="phone"/>
+                    <field name="work_email" string="Email" widget="email"/>
+                    <field name="age" string="Tuổi"/>
+                    <field name="hire_date" string="Ngày vào"/>
+                    <field name="state" string="Trạng thái"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ============================================== -->
+        <!-- 📋 ACTIONS                                     -->
+        <!-- ============================================== -->
+        
+        <!-- Main Action with List as default -->
+        <record id="action_hr_employee_extended_kanban" model="ir.actions.act_window">
+            <field name="name">👥 Nhân Viên</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.employee.extended</field>
+            <field name="view_mode">tree,kanban,form</field>
+            <field name="view_id" ref="view_hr_employee_extended_tree_modern"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    <b>Thêm nhân viên đầu tiên!</b>
+                </p>
+                <p>
+                    Hãy bắt đầu xây dựng đội ngũ nhân sự của bạn bằng cách thêm thông tin nhân viên vào hệ thống.
+                </p>
+            </field>
+        </record>
+
+
+
+    </data>
+</odoo>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ============================================== -->
+        <!-- 💼 CHỨC VỤ - MODERN VIEWS                      -->
+        <!-- ============================================== -->
+
+        <!-- Kanban View -->
+        <record id="view_chuc_vu_kanban_modern" model="ir.ui.view">
+            <field name="name">chuc_vu.kanban.modern</field>
+            <field name="model">chuc_vu</field>
+            <field name="arch" type="xml">
+                <kanban class="o_hr_kanban_view" sample="1">
+                    <field name="id"/>
+                    <field name="ma_chuc_vu"/>
+                    <field name="ten_chuc_vu"/>
+                    <field name="mo_ta"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click o_hr_employee_card">
+                                <!-- Icon Badge -->
+                                <div class="text-center mb-3">
+                                    <div class="o_hr_icon_badge primary">
+                                        <i class="fa fa-briefcase"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Title -->
+                                <div class="text-center">
+                                    <div class="o_hr_employee_name">
+                                        <t t-esc="record.ten_chuc_vu.raw_value"/>
+                                    </div>
+                                    <div class="o_hr_employee_job" style="color: #718096;">
+                                        <i class="fa fa-tag"/> <t t-esc="record.ma_chuc_vu.raw_value"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Description -->
+                                <div t-if="record.mo_ta.raw_value" style="margin-top: 15px; padding: 12px; background: #f7fafc; border-radius: 10px; border-left: 4px solid #667eea;">
+                                    <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">
+                                        <i class="fa fa-align-left"/> Mô tả:
+                                    </div>
+                                    <div style="font-size: 14px; color: #2d3748;">
+                                        <t t-esc="record.mo_ta.raw_value"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Form View Modern -->
+        <record id="view_chuc_vu_form_modern" model="ir.ui.view">
+            <field name="name">chuc_vu.form.modern</field>
+            <field name="model">chuc_vu</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <form string="Chức vụ">
+                    <sheet>
+                        <!-- Header with Icon -->
+                        <div class="oe_title">
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                                <div class="o_hr_icon_badge primary" style="width: 80px; height: 80px; font-size: 40px;">
+                                    <i class="fa fa-briefcase"/>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label for="ten_chuc_vu" class="oe_edit_only" style="font-size: 14px; color: #718096; margin-bottom: 5px;"/>
+                                    <h1 style="margin: 0;">
+                                        <field name="ten_chuc_vu" placeholder="Tên chức vụ" style="font-weight: 700; color: #2d3748;"/>
+                                    </h1>
+                                    <h3 style="margin: 5px 0 0 0; color: #667eea;">
+                                        <i class="fa fa-tag"/> <field name="ma_chuc_vu" placeholder="Mã chức vụ" class="oe_inline"/>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Information Card -->
+                        <group>
+                            <group string="📋 Thông tin chi tiết" class="o_hr_animate">
+                                <field name="mo_ta" placeholder="Mô tả về chức vụ này..." widget="text"/>
+                            </group>
+                        </group>
+
+                        <!-- Info Box -->
+                        <div class="alert alert-info" style="border-radius: 12px; margin-top: 20px;">
+                            <i class="fa fa-info-circle fa-2x" style="float: left; margin-right: 15px; color: #4facfe;"/>
+                            <strong>Thông tin:</strong><br/>
+                            Chức vụ này có thể được gán cho nhiều nhân viên trong hệ thống. 
+                            Mã chức vụ phải là duy nhất và không được trùng lặp.
+                        </div>
+                    </sheet>
+                    
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View Modern -->
+        <record id="view_chuc_vu_tree_modern" model="ir.ui.view">
+            <field name="name">chuc_vu.tree.modern</field>
+            <field name="model">chuc_vu</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <tree string="Danh sách chức vụ" import="1" export_xlsx="1">
+                    <field name="ma_chuc_vu" string="Mã"/>
+                    <field name="ten_chuc_vu" string="Tên chức vụ"/>
+                    <field name="mo_ta" string="Mô tả"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="chuc_vu_search_modern" model="ir.ui.view">
+            <field name="name">chuc_vu.search.modern</field>
+            <field name="model">chuc_vu</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm chức vụ">
+                    <field name="ma_chuc_vu" string="Mã chức vụ"/>
+                    <field name="ten_chuc_vu" string="Tên chức vụ"/>
+                    <field name="mo_ta" string="Mô tả"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Tên chức vụ" name="group_name" context="{'group_by': 'ten_chuc_vu'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Modern -->
+        <record id="action_chuc_vu_modern" model="ir.actions.act_window">
+            <field name="name">💼 Chức vụ</field>
+            <field name="res_model">chuc_vu</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="chuc_vu_search_modern"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    <b>Thêm chức vụ mới!</b>
+                </p>
+                <p>
+                    Tạo và quản lý các chức vụ trong công ty để gán cho nhân viên.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

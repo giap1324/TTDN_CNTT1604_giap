@@ -1,0 +1,480 @@
+/* ============================================== */
+/* 🎨 AI DASHBOARD - PROFESSIONAL STYLING        */
+/* ============================================== */
+
+/* ========== GRADIENT BACKGROUNDS ========== */
+.o_ai_dashboard_header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.o_ai_card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border: 1px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.o_ai_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* ========== STAT CARDS ========== */
+.o_ai_stat_card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+}
+
+.o_ai_stat_card.success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.o_ai_stat_card.warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.o_ai_stat_card.info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.o_ai_stat_card.danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+.o_ai_stat_card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,255,255,0.2) 0%, transparent 70%);
+    border-radius: 50%;
+}
+
+.o_ai_stat_icon {
+    font-size: 48px;
+    opacity: 0.8;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.o_ai_stat_value {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.o_ai_stat_label {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.9;
+}
+
+/* ========== KANBAN CARDS ========== */
+.o_kanban_view.o_ai_kanban .o_kanban_record {
+    border-radius: 16px;
+    border: none;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    margin: 8px;
+}
+
+.o_kanban_view.o_ai_kanban .o_kanban_record:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+}
+
+.o_ai_kanban_header {
+    padding: 16px;
+    border-radius: 12px 12px 0 0;
+    position: relative;
+}
+
+.o_ai_kanban_header.critical {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+}
+
+.o_ai_kanban_header.high {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.o_ai_kanban_header.medium {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.o_ai_kanban_header.low {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+/* ========== BADGES ========== */
+.o_ai_badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.o_ai_badge.critical {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+    animation: pulse 2s infinite;
+}
+
+.o_ai_badge.high {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.o_ai_badge.medium {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.o_ai_badge.low {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 65, 108, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 65, 108, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 65, 108, 0);
+    }
+}
+
+/* ========== PROGRESS BARS ========== */
+.o_ai_progress {
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.o_ai_progress_bar {
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    transition: width 0.5s ease;
+}
+
+.o_ai_progress_bar.success {
+    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+}
+
+.o_ai_progress_bar.warning {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+}
+
+.o_ai_progress_bar.danger {
+    background: linear-gradient(90deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+/* ========== BUTTONS ========== */
+.o_ai_btn {
+    padding: 12px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.o_ai_btn_primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.o_ai_btn_primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+}
+
+.o_ai_btn_success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(17, 153, 142, 0.4);
+}
+
+.o_ai_btn_danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
+}
+
+/* ========== FORM SECTIONS ========== */
+.o_ai_form_section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    border-left: 4px solid #667eea;
+}
+
+.o_ai_form_section_title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.o_ai_form_section_title i {
+    color: #667eea;
+}
+
+/* ========== CHARTS CONTAINER ========== */
+.o_ai_chart_container {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    height: 300px;
+}
+
+/* ========== DECISION CARDS ========== */
+.o_decision_card {
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.o_decision_card.maintain_now {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.o_decision_card.replace {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+}
+
+.o_decision_card.monitor {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.o_decision_card.dispose {
+    background: linear-gradient(135deg, #485563 0%, #29323c 100%);
+    color: white;
+}
+
+.o_decision_icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.o_decision_label {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* ========== ANOMALY INDICATORS ========== */
+.o_anomaly_indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+}
+
+.o_anomaly_indicator.spike {
+    background: rgba(255, 65, 108, 0.1);
+    border-left: 4px solid #ff416c;
+}
+
+.o_anomaly_indicator.unusual {
+    background: rgba(240, 147, 251, 0.1);
+    border-left: 4px solid #f093fb;
+}
+
+.o_anomaly_indicator.frequency {
+    background: rgba(79, 172, 254, 0.1);
+    border-left: 4px solid #4facfe;
+}
+
+/* ========== TIMELINE ========== */
+.o_ai_timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.o_ai_timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+}
+
+.o_ai_timeline_item {
+    position: relative;
+    padding-bottom: 20px;
+    margin-left: 20px;
+}
+
+.o_ai_timeline_item::before {
+    content: '';
+    position: absolute;
+    left: -30px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    background: white;
+    border: 3px solid #667eea;
+    border-radius: 50%;
+}
+
+/* ========== COST COMPARISON ========== */
+.o_cost_comparison {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
+
+.o_cost_bar {
+    flex: 1;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+}
+
+.o_cost_bar.maintain {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.o_cost_bar.replace {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+}
+
+.o_cost_value {
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.o_cost_label {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* ========== RESPONSIVE ========== */
+@media (max-width: 768px) {
+    .o_ai_stat_card {
+        min-height: 100px;
+    }
+    
+    .o_ai_stat_value {
+        font-size: 24px;
+    }
+    
+    .o_ai_stat_icon {
+        font-size: 32px;
+    }
+}
+
+/* ========== DARK MODE SUPPORT ========== */
+.o_dark .o_ai_card {
+    background: #2d3748;
+    border-color: #4a5568;
+}
+
+.o_dark .o_ai_form_section {
+    background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+}
+
+/* ========== TREE VIEW ENHANCEMENTS ========== */
+.o_list_view .o_ai_risk_critical {
+    background-color: rgba(255, 65, 108, 0.1) !important;
+}
+
+.o_list_view .o_ai_risk_high {
+    background-color: rgba(240, 147, 251, 0.1) !important;
+}
+
+.o_list_view .o_ai_risk_medium {
+    background-color: rgba(79, 172, 254, 0.1) !important;
+}
+
+/* ========== LOADING ANIMATION ========== */
+.o_ai_loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+}
+
+.o_ai_loading_spinner {
+    width: 50px;
+    height: 50px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ========== NOTIFICATION BELLS ========== */
+.o_ai_notification_badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff416c;
+    color: white;
+    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    animation: pulse 2s infinite;
+}

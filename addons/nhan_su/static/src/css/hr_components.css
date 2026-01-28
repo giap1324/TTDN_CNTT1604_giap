@@ -1,0 +1,122 @@
+/* ============================================== */
+/* 🎨 HR MODULE ICON - MODERN STYLING            */
+/* ============================================== */
+
+/* Menu icon styling */
+.o_app[data-menu-xmlid="nhan_su.menu_root"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.o_app[data-menu-xmlid="nhan_su.menu_root"] .o_app_icon {
+    color: white !important;
+}
+
+/* Form view enhancements */
+.o_form_sheet_bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Alert boxes */
+.alert-info {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border: none;
+    border-left: 4px solid #4facfe;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border: none;
+    border-left: 4px solid #38ef7d;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+    border: none;
+    border-left: 4px solid #f5576c;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    border: none;
+    border-left: 4px solid #ff4b2b;
+}
+
+/* Badge styling */
+.badge {
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-weight: 600;
+}
+
+.badge-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.badge-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.badge-warning {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.badge-danger {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+}
+
+.badge-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Toggle switch styling */
+.o_field_boolean_toggle {
+    position: relative;
+    width: 60px;
+    height: 30px;
+}
+
+.o_field_boolean_toggle input:checked + label {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+/* Widget phone styling */
+.o_field_phone {
+    font-weight: 600;
+    color: #667eea;
+}
+
+/* Widget email styling */
+.o_field_email {
+    font-weight: 600;
+    color: #4facfe;
+}
+
+/* Ribbon for status */
+.ribbon {
+    position: absolute;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.ribbon-top-right {
+    top: 10px;
+    right: -5px;
+    border-radius: 8px 0 0 8px;
+}
+
+.ribbon-top-right::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 5px 0 0;
+    border-color: transparent;
+}

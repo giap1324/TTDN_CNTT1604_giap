@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- ============================================ -->
+        <!-- CRON JOB 1: Auto-train XGBoost Model         -->
+        <!-- Chạy hàng ngày lúc 2:00 AM                   -->
+        <!-- ============================================ -->
+        <record id="ir_cron_auto_train_ai" model="ir.cron">
+            <field name="name">AI: Auto-train XGBoost Model</field>
+            <field name="model_id" ref="model_asset_maintenance_prediction"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_auto_train_model()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 02:00:00')"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CRON JOB 2: Auto-predict cho tài sản mới    -->
+        <!-- Chạy hàng ngày lúc 3:00 AM                   -->
+        <!-- ============================================ -->
+        <record id="ir_cron_auto_predict_assets" model="ir.cron">
+            <field name="name">AI: Auto-predict tất cả tài sản</field>
+            <field name="model_id" ref="model_asset_maintenance_prediction"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_predict_new_assets()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 03:00:00')"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CRON JOB 3: Phát hiện chi phí bất thường    -->
+        <!-- Chạy hàng tuần (Thứ 2) lúc 4:00 AM          -->
+        <!-- ============================================ -->
+        <record id="ir_cron_anomaly_detection" model="ir.cron">
+            <field name="name">AI: Phát hiện chi phí bất thường</field>
+            <field name="model_id" ref="model_asset_anomaly_detection"/>
+            <field name="state">code</field>
+            <field name="code">model.run_anomaly_detection()</field>
+            <field name="interval_number">7</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 04:00:00')"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CRON JOB 4: Tối ưu chi phí tài sản          -->
+        <!-- Chạy hàng tháng (ngày 1) lúc 5:00 AM        -->
+        <!-- ============================================ -->
+        <record id="ir_cron_cost_optimization" model="ir.cron">
+            <field name="name">AI: Tối ưu chi phí tài sản</field>
+            <field name="model_id" ref="model_asset_cost_optimization"/>
+            <field name="state">code</field>
+            <field name="code">model.analyze_all_assets()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">days</field>
+            <field name="numbercall">-1</field>
+            <field name="active" eval="True"/>
+            <field name="doall" eval="False"/>
+            <field name="nextcall" eval="(DateTime.now() + timedelta(days=1)).strftime('%Y-%m-%d 05:00:00')"/>
+        </record>
+    </data>
+</odoo>

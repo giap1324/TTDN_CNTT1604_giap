@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ==================== BOOKING KANBAN VIEW ==================== -->
+    <record id="view_meeting_room_booking_kanban" model="ir.ui.view">
+        <field name="name">meeting.room.booking.kanban</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard" default_group_by="state">
+                <field name="id"/>
+                <field name="subject"/>
+                <field name="room_id"/>
+                <field name="organizer_id"/>
+                <field name="start_time"/>
+                <field name="end_time"/>
+                <field name="duration"/>
+                <field name="state"/>
+                <field name="has_conflict"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header with State -->
+                            <div class="p-3 rounded-top" t-attf-style="background: linear-gradient(135deg, #{record.state.raw_value == 'confirmed' ? '#11998e, #38ef7d' : record.state.raw_value == 'completed' ? '#667eea, #764ba2' : record.state.raw_value == 'cancelled' ? '#ff416c, #ff4b2b' : '#f093fb, #f5576c'});">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <strong style="font-size: 13px;">
+                                        <i t-if="record.state.raw_value == 'pending'" class="fa fa-clock-o mr-1"/>
+                                        <i t-if="record.state.raw_value == 'confirmed'" class="fa fa-check-circle mr-1"/>
+                                        <i t-if="record.state.raw_value == 'completed'" class="fa fa-trophy mr-1"/>
+                                        <i t-if="record.state.raw_value == 'cancelled'" class="fa fa-times-circle mr-1"/>
+                                        <field name="state"/>
+                                    </strong>
+                                    <div>
+                                        <span t-if="record.has_conflict.raw_value" class="badge badge-warning" style="background: rgba(255,65,108,0.8); animation: pulse 2s infinite;">
+                                            <i class="fa fa-warning"/> Xung đột
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="p-3">
+                                <div class="font-weight-bold mb-2" style="font-size: 15px;">
+                                    <field name="subject"/>
+                                </div>
+                                
+                                <!-- Room Info -->
+                                <div class="mb-2 p-2 rounded" style="background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%);">
+                                    <div class="text-muted small mb-1">
+                                        <i class="fa fa-building mr-1"/> <field name="room_id"/>
+                                    </div>
+                                    <div class="text-muted small">
+                                        <i class="fa fa-user mr-1"/> <field name="organizer_id"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Time Info -->
+                                <div class="mb-2">
+                                    <div class="d-flex align-items-center mb-1">
+                                        <i class="fa fa-calendar text-primary mr-2" style="font-size: 16px;"/>
+                                        <div style="flex: 1;">
+                                            <div class="small text-muted">Bắt đầu</div>
+                                            <div class="font-weight-bold" style="color: #667eea;">
+                                                <field name="start_time" widget="datetime"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fa fa-calendar-check-o text-success mr-2" style="font-size: 16px;"/>
+                                        <div style="flex: 1;">
+                                            <div class="small text-muted">Kết thúc</div>
+                                            <div class="font-weight-bold" style="color: #11998e;">
+                                                <field name="end_time" widget="datetime"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Duration Badge -->
+                                <div class="text-center mt-2 p-2 rounded" style="background: linear-gradient(135deg, rgba(17,153,142,0.1) 0%, rgba(56,239,125,0.1) 100%);">
+                                    <span class="text-muted small">⏱️ Thời lượng:</span>
+                                    <span class="font-weight-bold ml-2" style="color: #11998e;">
+                                        <field name="duration" widget="float_time"/>
+                                    </span>
+                                </div>
+                                
+                                <!-- Attendees Count -->
+                                <div class="mt-2 text-muted small text-center">
+                                    <i class="fa fa-users"/> <field name="expected_attendees"/> người tham dự
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== BOOKING TREE VIEW PRO ==================== -->
+    <record id="view_meeting_room_booking_tree_pro" model="ir.ui.view">
+        <field name="name">meeting.room.booking.tree.pro</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree decoration-success="state=='confirmed'" 
+                  decoration-info="state=='pending'"
+                  decoration-muted="state=='cancelled'"
+                  decoration-primary="state=='completed'"
+                  decoration-danger="has_conflict==True"
+                  default_order="start_time desc">
+                <field name="subject" string="📋 Chủ đề"/>
+                <field name="room_id" string="🏢 Phòng"/>
+                <field name="organizer_id" string="👤 Người tổ chức"/>
+                <field name="start_time" string="📅 Bắt đầu" widget="datetime"/>
+                <field name="end_time" string="📅 Kết thúc" widget="datetime"/>
+                <field name="duration" string="⏱️ Thời lượng" widget="float_time"/>
+                <field name="expected_attendees" string="👥 Số người"/>
+                <field name="has_conflict" string="⚠️ Xung đột" widget="boolean" optional="show"/>
+                <field name="state" string="📊 Trạng thái" widget="badge" 
+                       decoration-success="state=='confirmed'" 
+                       decoration-info="state=='pending'"
+                       decoration-primary="state=='completed'"
+                       decoration-danger="state=='cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== BOOKING FORM VIEW PRO ==================== -->
+    <record id="view_meeting_room_booking_form_pro" model="ir.ui.view">
+        <field name="name">meeting.room.booking.form.pro</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit_for_approval" string="📤 Gửi phê duyệt" type="object" class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                    <button name="action_approve" string="✅ Phê duyệt" type="object" class="btn-success"
+                            attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                    <button name="action_cancel" string="❌ Hủy bỏ" type="object" class="btn-danger"
+                            attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
+                    <button name="action_check_in" string="📍 Check-in" type="object" class="btn-info"
+                            attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                    <button name="action_check_out" string="🏁 Check-out" type="object" class="btn-success"
+                            attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                    <button name="action_send_telegram_reminder" string="📱 Gửi nhắc nhở Telegram" type="object" class="btn-warning"
+                            attrs="{'invisible': [('state', 'in', ['draft', 'cancelled', 'completed'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,pending,confirmed,in_progress,completed"/>
+                </header>
+                <sheet>
+                    <!-- Alert for Conflict -->
+                    <div class="alert alert-danger" role="alert" attrs="{'invisible': [('has_conflict', '=', False)]}" style="animation: pulse 2s infinite;">
+                        <h4 class="alert-heading">
+                            <i class="fa fa-warning"/> Cảnh báo xung đột!
+                        </h4>
+                        <p class="mb-0">
+                            Phòng này đã có <field name="conflict_count" readonly="1"/> lịch đặt trùng thời gian.
+                        </p>
+                    </div>
+                    
+                    <!-- Title Section -->
+                    <div class="oe_title">
+                        <h1 class="mb-2">
+                            <field name="subject" placeholder="Chủ đề cuộc họp" style="color: #667eea;"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- Info Cards -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #667eea;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">🏢 PHÒNG HỌP</div>
+                                    <div style="font-size: 16px; font-weight: bold; color: #667eea;">
+                                        <field name="room_id"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #11998e;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">⏱️ THỜI LƯỢNG</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #11998e;">
+                                        <field name="duration" widget="float_time"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center" style="border-radius: 16px; border-left: 4px solid #f5576c;">
+                                <div class="card-body">
+                                    <div class="text-muted small mb-2">👥 SỐ NGƯỜI</div>
+                                    <div style="font-size: 20px; font-weight: bold; color: #f5576c;">
+                                        <field name="expected_attendees"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Info -->
+                    <group class="mt-4">
+                        <group string="📋 Thông tin cơ bản">
+                            <field name="organizer_id"/>
+                            <field name="booker_id"/>
+                        </group>
+                        <group string="⏰ Thời gian">
+                            <field name="start_time"/>
+                            <field name="end_time"/>
+                        </group>
+                    </group>
+                    
+                    <group string="📝 Mô tả">
+                        <field name="description" placeholder="Mô tả chi tiết cuộc họp..." nolabel="1"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="👥 Người tham dự" name="attendees">
+                            <field name="attendee_ids" nolabel="1" widget="many2many_tags"/>
+                        </page>
+                        
+                        <page string="⚙️ Thiết bị" name="equipment">
+                            <field name="room_location_id" invisible="1"/>
+                            <field name="equipment_ids" nolabel="1">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="category_id"/>
+                                    <field name="state" widget="badge"/>
+                                </tree>
+                            </field>
+                            <group string="📝 Ghi chú thiết bị">
+                                <field name="equipment_notes" placeholder="Yêu cầu thiết bị đặc biệt..." nolabel="1"/>
+                            </group>
+                        </page>
+                        
+                        <page string="📊 Thống kê" name="stats">
+                            <group>
+                                <group string="📈 Thống kê">
+                                    <field name="actual_attendees" readonly="1"/>
+                                    <field name="check_in_time" readonly="1"/>
+                                    <field name="check_out_time" readonly="1"/>
+                                </group>
+                                <group string="📝 Đánh giá">
+                                    <field name="rating" readonly="1"/>
+                                    <field name="feedback" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        
+                        <page string="🔗 Xung đột" name="conflicts">
+                            <group>
+                                <field name="has_conflict" readonly="1"/>
+                                <field name="conflict_count" readonly="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== CALENDAR VIEW ==================== -->
+    <record id="view_meeting_room_booking_calendar" model="ir.ui.view">
+        <field name="name">meeting.room.booking.calendar</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <calendar string="📅 Lịch đặt phòng" 
+                      date_start="start_time" 
+                      date_stop="end_time"
+                      color="room_id"
+                      mode="week"
+                      quick_add="False"
+                      event_open_popup="True">
+                <field name="subject"/>
+                <field name="room_id" filters="1" color="blue"/>
+                <field name="organizer_id" avatar_field="image_128"/>
+                <field name="state" filters="1" invisible="1"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ==================== GRAPH VIEW ==================== -->
+    <record id="view_meeting_room_booking_graph" model="ir.ui.view">
+        <field name="name">meeting.room.booking.graph</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <graph string="📊 Thống kê đặt phòng" type="bar" sample="1">
+                <field name="room_id"/>
+                <field name="duration" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ==================== PIVOT VIEW ==================== -->
+    <record id="view_meeting_room_booking_pivot" model="ir.ui.view">
+        <field name="name">meeting.room.booking.pivot</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <pivot string="📊 Phân tích đặt phòng" sample="1">
+                <field name="room_id" type="row"/>
+                <field name="state" type="col"/>
+                <field name="duration" type="measure"/>
+                <field name="expected_attendees" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ==================== TIMELINE VIEW (GANTT) ==================== -->
+    <record id="view_meeting_room_booking_gantt" model="ir.ui.view">
+        <field name="name">meeting.room.booking.gantt</field>
+        <field name="model">meeting.room.booking</field>
+        <field name="arch" type="xml">
+            <gantt string="📅 Timeline đặt phòng"
+                   date_start="start_time"
+                   date_stop="end_time"
+                   default_group_by="room_id"
+                   color="state"
+                   decoration-danger="has_conflict==True">
+                <field name="subject"/>
+                <field name="organizer_id"/>
+                <field name="state"/>
+                <field name="has_conflict"/>
+            </gantt>
+        </field>
+    </record>
+
+    <!-- ==================== UPDATE ACTION ==================== -->
+    <record id="action_meeting_room_booking_pro" model="ir.actions.act_window">
+        <field name="name">📅 Đặt phòng họp</field>
+        <field name="res_model">meeting.room.booking</field>
+        <field name="view_mode">kanban,calendar,gantt,tree,form,graph,pivot</field>
+        <field name="search_view_id" ref="view_meeting_room_booking_search"/>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-calendar-check-o mr-2"/> Đặt phòng họp
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px;">
+                        Quản lý lịch đặt phòng và tránh xung đột thời gian
+                    </p>
+                </div>
+                <a type="action" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; padding: 15px 40px; border-radius: 30px; font-size: 16px;">
+                    <i class="fa fa-plus-circle mr-2"/> Tạo đặt phòng mới
+                </a>
+            </div>
+        </field>
+    </record>
+
+</odoo>

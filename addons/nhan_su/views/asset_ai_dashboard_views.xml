@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- 🎨 AI DASHBOARD - MAIN VIEW                  -->
+    <!-- ============================================ -->
+    
+    <!-- Dashboard Action -->
+    <record id="action_ai_dashboard" model="ir.actions.client">
+        <field name="name">🤖 AI Dashboard</field>
+        <field name="tag">ai_dashboard</field>
+    </record>
+
+    <!-- ==================== PREDICTION KANBAN VIEW (IMPROVED) ==================== -->
+    <record id="view_asset_maintenance_prediction_kanban_pro" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.kanban.pro</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <kanban class="o_ai_kanban o_kanban_dashboard" default_group_by="risk_level">
+                <field name="id"/>
+                <field name="asset_id"/>
+                <field name="asset_category_id"/>
+                <field name="next_maintenance_date"/>
+                <field name="predicted_cost"/>
+                <field name="confidence_score"/>
+                <field name="risk_level"/>
+                <field name="state"/>
+                <field name="maintenance_type"/>
+                <field name="currency_id"/>
+                
+                <progressbar field="state" colors='{"predicted": "info", "scheduled": "warning", "completed": "success", "cancelled": "danger"}'/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill">
+                            <!-- Header with Risk Level Gradient -->
+                            <div t-attf-class="o_ai_kanban_header #{record.risk_level.raw_value}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong class="o_kanban_record_title" style="font-size: 16px;">
+                                            <field name="asset_id"/>
+                                        </strong>
+                                        <div style="opacity: 0.85; font-size: 12px; margin-top: 4px;">
+                                            <field name="asset_category_id"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <span t-attf-class="badge badge-pill" style="background: rgba(255,255,255,0.25); padding: 8px 12px;">
+                                            <i class="fa fa-exclamation-triangle mr-1"/>
+                                            <field name="risk_level"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="o_kanban_record_body p-3">
+                                <!-- Date & Type -->
+                                <div class="d-flex justify-content-between mb-3">
+                                    <div>
+                                        <div class="text-muted small">📅 Bảo trì tiếp theo</div>
+                                        <div class="font-weight-bold">
+                                            <field name="next_maintenance_date" widget="date"/>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-muted small">🔧 Loại</div>
+                                        <div class="font-weight-bold">
+                                            <field name="maintenance_type"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cost -->
+                                <div class="mb-3 p-2 rounded" style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);">
+                                    <div class="text-muted small">💰 Chi phí dự đoán</div>
+                                    <div class="font-weight-bold" style="font-size: 20px; color: #667eea;">
+                                        <field name="predicted_cost" widget="monetary"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Confidence -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between mb-1">
+                                        <span class="text-muted small">🎯 Độ tin cậy</span>
+                                        <span class="font-weight-bold"><field name="confidence_score"/>%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px; border-radius: 10px;">
+                                        <div class="progress-bar" 
+                                             role="progressbar" 
+                                             t-attf-style="width: #{record.confidence_score.raw_value}%; background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);"
+                                             t-att-aria-valuenow="record.confidence_score.raw_value"
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="o_kanban_record_bottom p-2 border-top">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <field name="state" widget="label_selection" options="{'classes': {'predicted': 'info', 'scheduled': 'warning', 'completed': 'success', 'cancelled': 'danger'}}"/>
+                                    <div class="o_kanban_manage_button_section">
+                                        <a t-if="record.state.raw_value == 'predicted'" type="object" name="action_schedule_maintenance" class="btn btn-sm btn-outline-primary">
+                                            <i class="fa fa-calendar-plus-o"/> Lên lịch
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- ==================== PREDICTION TREE VIEW (IMPROVED) ==================== -->
+    <record id="view_asset_maintenance_prediction_tree_pro" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.tree.pro</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="risk_level=='critical'" 
+                  decoration-warning="risk_level=='high'"
+                  decoration-info="risk_level=='medium'"
+                  decoration-success="risk_level=='low'"
+                  default_order="risk_level desc, next_maintenance_date asc">
+                <header>
+                    <button name="batch_predict_all_assets" 
+                            string="🚀 Dự đoán hàng loạt" 
+                            type="object" 
+                            class="btn-primary"/>
+                    <button name="action_retrain_model" 
+                            string="🧠 Train AI Model" 
+                            type="object" 
+                            class="btn-secondary"/>
+                </header>
+                <field name="asset_id" string="📦 Tài sản"/>
+                <field name="asset_category_id" string="📁 Danh mục" optional="show"/>
+                <field name="next_maintenance_date" string="📅 Ngày bảo trì" widget="remaining_days"/>
+                <field name="predicted_cost" string="💰 Chi phí" widget="monetary" sum="Tổng chi phí"/>
+                <field name="confidence_score" string="🎯 Độ tin cậy" widget="progressbar" 
+                       options="{'current_value': 'confidence_score', 'max_value': 100}"/>
+                <field name="risk_level" string="⚠️ Rủi ro" widget="badge" 
+                       decoration-danger="risk_level=='critical'"
+                       decoration-warning="risk_level=='high'"
+                       decoration-info="risk_level=='medium'"
+                       decoration-success="risk_level=='low'"/>
+                <field name="maintenance_type" string="🔧 Loại" widget="badge"/>
+                <field name="state" string="📊 Trạng thái" widget="badge"
+                       decoration-info="state=='predicted'"
+                       decoration-warning="state=='scheduled'"
+                       decoration-success="state=='completed'"
+                       decoration-muted="state=='cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- ==================== PREDICTION FORM VIEW (IMPROVED) ==================== -->
+    <record id="view_asset_maintenance_prediction_form_pro" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.form.pro</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_schedule_maintenance" 
+                            string="📅 Lên lịch bảo trì" 
+                            type="object" 
+                            class="btn-primary"
+                            attrs="{'invisible': [('state', '!=', 'predicted')]}"/>
+                    <button name="action_retrain_model" 
+                            string="🧠 Train AI Model" 
+                            type="object"/>
+                    <button name="action_view_cost_trends" 
+                            string="📊 Xu hướng chi phí" 
+                            type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="predicted,scheduled,completed"/>
+                </header>
+                
+                <sheet>
+                    <!-- Risk Ribbon -->
+                    <widget name="web_ribbon" title="🔴 KHẨN CẤP" bg_color="bg-danger" 
+                            attrs="{'invisible': [('risk_level', '!=', 'critical')]}"/>
+                    <widget name="web_ribbon" title="🟠 RỦI RO CAO" bg_color="bg-warning" 
+                            attrs="{'invisible': [('risk_level', '!=', 'high')]}"/>
+                    
+                    <!-- Smart Button Box -->
+                    <div class="oe_button_box" name="button_box">
+                    </div>
+                    
+                    <!-- Title -->
+                    <div class="oe_title">
+                        <label for="asset_id" class="oe_edit_only"/>
+                        <h1>
+                            <field name="asset_id" placeholder="Chọn tài sản" options="{'no_open': True}"/>
+                        </h1>
+                        <field name="asset_category_id" readonly="1" class="text-muted"/>
+                    </div>
+                    
+                    <!-- Main Info Cards -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card" style="border-radius: 16px; border-left: 4px solid #667eea;">
+                                <div class="card-body text-center">
+                                    <div class="text-muted small mb-2">📅 NGÀY BẢO TRÌ</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #667eea;">
+                                        <field name="next_maintenance_date" widget="date"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card" style="border-radius: 16px; border-left: 4px solid #11998e;">
+                                <div class="card-body text-center">
+                                    <div class="text-muted small mb-2">💰 CHI PHÍ DỰ ĐOÁN</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #11998e;">
+                                        <field name="predicted_cost" widget="monetary"/>
+                                    </div>
+                                    <field name="currency_id" invisible="1"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card" style="border-radius: 16px; border-left: 4px solid #f5576c;">
+                                <div class="card-body text-center">
+                                    <div class="text-muted small mb-2">🎯 ĐỘ TIN CẬY</div>
+                                    <div style="font-size: 24px; font-weight: bold; color: #f5576c;">
+                                        <field name="confidence_score"/>%
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Details -->
+                    <group class="mt-4">
+                        <group string="📋 Chi tiết dự đoán">
+                            <field name="prediction_date" string="Ngày dự đoán"/>
+                            <field name="maintenance_type" string="Loại bảo trì"/>
+                            <field name="risk_level" widget="radio" string="Mức độ rủi ro"/>
+                            <field name="usage_hours" string="Giờ sử dụng" attrs="{'invisible': [('usage_hours', '=', 0)]}"/>
+                        </group>
+                        <group string="💡 Lý do &amp; Ghi chú">
+                            <field name="prediction_reason" string="Lý do AI đề xuất" nolabel="1" placeholder="Phân tích từ mô hình AI..."/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📝 Ghi chú" name="notes">
+                            <field name="notes" placeholder="Thêm ghi chú của bạn..." nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- ==================== GRAPH VIEW ==================== -->
+    <record id="view_asset_maintenance_prediction_graph" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.graph</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="arch" type="xml">
+            <graph string="📊 Biểu đồ dự đoán" type="bar" stacked="True">
+                <field name="asset_category_id" type="row"/>
+                <field name="risk_level" type="col"/>
+                <field name="predicted_cost" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- ==================== PIVOT VIEW ==================== -->
+    <record id="view_asset_maintenance_prediction_pivot" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.pivot</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="arch" type="xml">
+            <pivot string="📈 Phân tích dự đoán">
+                <field name="asset_category_id" type="row"/>
+                <field name="risk_level" type="col"/>
+                <field name="predicted_cost" type="measure"/>
+                <field name="confidence_score" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- ==================== CALENDAR VIEW ==================== -->
+    <record id="view_asset_maintenance_prediction_calendar" model="ir.ui.view">
+        <field name="name">asset.maintenance.prediction.calendar</field>
+        <field name="model">asset.maintenance.prediction</field>
+        <field name="arch" type="xml">
+            <calendar string="📅 Lịch bảo trì" date_start="next_maintenance_date" color="risk_level" mode="month" quick_add="False">
+                <field name="asset_id"/>
+                <field name="maintenance_type"/>
+                <field name="predicted_cost" widget="monetary"/>
+                <field name="risk_level"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- ==================== UPDATE ACTION WITH NEW VIEWS ==================== -->
+    <record id="action_asset_maintenance_prediction_pro" model="ir.actions.act_window">
+        <field name="name">🤖 XGBoost AI Predictions</field>
+        <field name="res_model">asset.maintenance.prediction</field>
+        <field name="view_mode">kanban,tree,form,calendar,graph,pivot</field>
+        <field name="search_view_id" ref="view_asset_maintenance_prediction_search"/>
+        <field name="context">{'search_default_high_risk': 0}</field>
+        <field name="help" type="html">
+            <div class="o_ai_dashboard_header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px;">
+                <h1 style="color: white; margin-bottom: 20px;">
+                    <i class="fa fa-robot mr-2"/> XGBoost AI Predictions
+                </h1>
+                <p style="color: rgba(255,255,255,0.9); font-size: 18px; margin-bottom: 30px;">
+                    Hệ thống dự đoán bảo trì thông minh sử dụng Machine Learning
+                </p>
+                <div class="row justify-content-center">
+                    <div class="col-md-3">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 16px;">
+                            <i class="fa fa-calendar fa-2x mb-2" style="color: white;"/>
+                            <div style="color: white; font-weight: bold;">Dự đoán ngày</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 16px;">
+                            <i class="fa fa-money fa-2x mb-2" style="color: white;"/>
+                            <div style="color: white; font-weight: bold;">Ước tính chi phí</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 16px;">
+                            <i class="fa fa-warning fa-2x mb-2" style="color: white;"/>
+                            <div style="color: white; font-weight: bold;">Phân tích rủi ro</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+
+</odoo>

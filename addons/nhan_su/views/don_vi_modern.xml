@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ============================================== -->
+        <!-- 🏢 ĐỐN VỊ - MODERN VIEWS                       -->
+        <!-- ============================================== -->
+
+        <!-- Kanban View -->
+        <record id="view_don_vi_kanban_modern" model="ir.ui.view">
+            <field name="name">don_vi.kanban.modern</field>
+            <field name="model">don_vi</field>
+            <field name="arch" type="xml">
+                <kanban class="o_hr_kanban_view" sample="1">
+                    <field name="id"/>
+                    <field name="ma_don_vi"/>
+                    <field name="ten_don_vi"/>
+                    <field name="mo_ta"/>
+                    <field name="employee_count"/>
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card oe_kanban_global_click o_hr_employee_card">
+                                <!-- Icon Badge -->
+                                <div class="text-center mb-3">
+                                    <div class="o_hr_icon_badge info">
+                                        <i class="fa fa-building"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Title -->
+                                <div class="text-center">
+                                    <div class="o_hr_employee_name">
+                                        <t t-esc="record.ten_don_vi.raw_value"/>
+                                    </div>
+                                    <div class="o_hr_employee_job" style="color: #718096;">
+                                        <i class="fa fa-tag"/> <t t-esc="record.ma_don_vi.raw_value"/>
+                                    </div>
+                                </div>
+                                
+                                <!-- Stats -->
+                                <div style="margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 10px; color: white; text-align: center;">
+                                    <div style="font-size: 28px; font-weight: 700;">
+                                        <t t-esc="record.employee_count.raw_value || 0"/>
+                                    </div>
+                                    <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">
+                                        <i class="fa fa-users"/> Nhân viên
+                                    </div>
+                                </div>
+                                
+                                <!-- Description -->
+                                <div t-if="record.mo_ta.raw_value" style="margin-top: 15px; padding: 12px; background: #f7fafc; border-radius: 10px; border-left: 4px solid #4facfe;">
+                                    <div style="font-size: 12px; color: #718096; margin-bottom: 4px;">
+                                        <i class="fa fa-align-left"/> Mô tả:
+                                    </div>
+                                    <div style="font-size: 14px; color: #2d3748;">
+                                        <t t-esc="record.mo_ta.raw_value"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- Form View Modern -->
+        <record id="view_don_vi_form_modern" model="ir.ui.view">
+            <field name="name">don_vi.form.modern</field>
+            <field name="model">don_vi</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <form string="Đơn vị">
+                    <sheet>
+                        <!-- Button Box -->
+                        <div class="oe_button_box" name="button_box">
+                            <button class="oe_stat_button" type="object" name="action_view_employees" icon="fa-users">
+                                <div class="o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="employee_count" widget="integer"/>
+                                    </span>
+                                    <span class="o_stat_text">Nhân viên</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Header with Icon -->
+                        <div class="oe_title">
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                                <div class="o_hr_icon_badge info" style="width: 80px; height: 80px; font-size: 40px;">
+                                    <i class="fa fa-building"/>
+                                </div>
+                                <div style="flex: 1;">
+                                    <label for="ten_don_vi" class="oe_edit_only" style="font-size: 14px; color: #718096; margin-bottom: 5px;"/>
+                                    <h1 style="margin: 0;">
+                                        <field name="ten_don_vi" placeholder="Tên đơn vị" style="font-weight: 700; color: #2d3748;"/>
+                                    </h1>
+                                    <h3 style="margin: 5px 0 0 0; color: #4facfe;">
+                                        <i class="fa fa-tag"/> <field name="ma_don_vi" placeholder="Mã đơn vị" class="oe_inline"/>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Information Card -->
+                        <group>
+                            <group string="📋 Thông tin chi tiết" class="o_hr_animate">
+                                <field name="mo_ta" placeholder="Mô tả về đơn vị này..." widget="text"/>
+                            </group>
+                        </group>
+
+                        <!-- Notebook -->
+                        <notebook>
+                            <page string="👥 Danh sách nhân viên">
+                                <field name="nhan_vien_ids" nolabel="1">
+                                    <tree string="Nhân viên" decoration-success="state=='active'" 
+                                          decoration-warning="state=='pending'" 
+                                          decoration-muted="state=='inactive'">
+                                        <field name="employee_code" string="Mã NV"/>
+                                        <field name="name" string="Họ tên"/>
+                                        <field name="job_title" string="Chức vụ"/>
+                                        <field name="phone" string="Điện thoại"/>
+                                        <field name="work_email" string="Email"/>
+                                        <field name="state" string="Trạng thái" widget="badge"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+
+                        <!-- Info Box -->
+                        <div class="alert alert-info" style="border-radius: 12px; margin-top: 20px;">
+                            <i class="fa fa-building fa-2x" style="float: left; margin-right: 15px; color: #4facfe;"/>
+                            <strong>Thông tin:</strong><br/>
+                            Đơn vị tổ chức đại diện cho các phòng ban, bộ phận trong công ty.
+                            Mỗi đơn vị có thể chứa nhiều nhân viên với các chức vụ khác nhau.
+                        </div>
+                    </sheet>
+                    
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View Modern -->
+        <record id="view_don_vi_tree_modern" model="ir.ui.view">
+            <field name="name">don_vi.tree.modern</field>
+            <field name="model">don_vi</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <tree string="Danh sách đơn vị" import="1" export_xlsx="1">
+                    <field name="ma_don_vi" string="Mã"/>
+                    <field name="ten_don_vi" string="Tên đơn vị"/>
+                    <field name="employee_count" string="Số nhân viên" widget="integer"/>
+                    <field name="mo_ta" string="Mô tả"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="don_vi_search_modern" model="ir.ui.view">
+            <field name="name">don_vi.search.modern</field>
+            <field name="model">don_vi</field>
+            <field name="priority">5</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm đơn vị">
+                    <field name="ma_don_vi" string="Mã đơn vị"/>
+                    <field name="ten_don_vi" string="Tên đơn vị"/>
+                    <field name="mo_ta" string="Mô tả"/>
+                    <filter string="Có nhân viên" name="has_employees" domain="[('employee_count', '>', 0)]"/>
+                    <filter string="Chưa có nhân viên" name="no_employees" domain="[('employee_count', '=', 0)]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Tên đơn vị" name="group_name" context="{'group_by': 'ten_don_vi'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action Modern -->
+        <record id="action_don_vi_modern" model="ir.actions.act_window">
+            <field name="name">🏢 Đơn vị</field>
+            <field name="res_model">don_vi</field>
+            <field name="view_mode">kanban,tree,form</field>
+            <field name="search_view_id" ref="don_vi_search_modern"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    <b>Thêm đơn vị mới!</b>
+                </p>
+                <p>
+                    Tạo và quản lý các đơn vị, phòng ban trong công ty.
+                </p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

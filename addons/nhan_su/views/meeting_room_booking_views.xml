@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- ==================== TREE VIEW (Cải tiến) ==================== -->
+        <record id="view_meeting_room_booking_tree" model="ir.ui.view">
+            <field name="name">meeting.room.booking.tree</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <tree decoration-danger="has_conflict==True" 
+                      decoration-warning="state=='pending'"
+                      decoration-info="state=='confirmed'"
+                      decoration-success="state=='completed'"
+                      decoration-muted="state=='cancelled'">
+                    <field name="name"/>
+                    <field name="room_id"/>
+                    <field name="subject"/>
+                    <field name="organizer_id"/>
+                    <field name="start_time"/>
+                    <field name="end_time"/>
+                    <field name="duration" widget="float_time"/>
+                    <field name="expected_attendees"/>
+                    
+                    <!-- Cảnh báo xung đột -->
+                    <field name="has_conflict" invisible="1"/>
+                    <field name="conflict_count" string="⚠️" optional="show"/>
+                    
+                    <!-- Phê duyệt -->
+                    <field name="require_approval" invisible="1"/>
+                    <field name="approval_level" optional="hide"/>
+                    <field name="approved_by_id" optional="hide"/>
+                    
+                    <!-- Thiết bị -->
+                    <field name="equipment_prepared" widget="boolean_toggle" optional="hide"/>
+                    
+                    <!-- Trạng thái -->
+                    <field name="state" widget="badge" 
+                           decoration-success="state=='confirmed'" 
+                           decoration-info="state=='in_progress'"
+                           decoration-warning="state=='pending'"
+                           decoration-muted="state in ['completed','cancelled']"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- ==================== FORM VIEW (Đầy đủ) ==================== -->
+        <record id="view_meeting_room_booking_form" model="ir.ui.view">
+            <field name="name">meeting.room.booking.form</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <!-- Draft -> Pending -->
+                        <button name="action_submit_for_approval" string="Gửi phê duyệt" 
+                                type="object" class="oe_highlight" 
+                                attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('require_approval', '=', False)]}"/>
+                        
+                        <!-- Pending -> Confirmed (Approve) -->
+                        <button name="action_approve" string="✓ Phê duyệt" 
+                                type="object" class="oe_highlight" 
+                                attrs="{'invisible': [('state', '!=', 'pending')]}"
+                                groups="hr.group_hr_manager"/>
+                        
+                        <!-- Pending -> Cancelled (Reject) -->
+                        <button name="action_reject" string="✗ Từ chối" 
+                                type="object" 
+                                attrs="{'invisible': [('state', '!=', 'pending')]}"
+                                groups="hr.group_hr_manager"/>
+                        
+                        <!-- Draft -> Confirmed (Không cần phê duyệt) -->
+                        <button name="action_approve" string="Xác nhận" 
+                                type="object" class="oe_highlight" 
+                                attrs="{'invisible': ['|', ('state', '!=', 'draft'), ('require_approval', '=', True)]}"/>
+                        
+                        <!-- Confirmed -> In Progress (Check-in) -->
+                        <button name="action_check_in" string="📍 Check-in" 
+                                type="object" class="oe_highlight" 
+                                attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                        
+                        <!-- In Progress -> Completed (Check-out) -->
+                        <button name="action_check_out" string="✓ Check-out" 
+                                type="object" class="oe_highlight" 
+                                attrs="{'invisible': [('state', '!=', 'in_progress')]}"/>
+                        
+                        <!-- Suggest Alternative -->
+                        <button name="action_suggest_alternatives" string="🔍 Gợi ý phòng khác" 
+                                type="object" 
+                                attrs="{'invisible': [('has_conflict', '=', False)]}"/>
+                        
+                        <!-- Cancel -->
+                        <button name="action_cancel" string="Hủy" 
+                                type="object" 
+                                attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
+                        
+                        <field name="state" widget="statusbar" 
+                               statusbar_visible="draft,pending,confirmed,in_progress,completed"/>
+                    </header>
+                    
+                    <sheet>
+                        <!-- Hidden fields for attrs -->
+                        <field name="has_conflict" invisible="1"/>
+                        <field name="conflict_count" invisible="1"/>
+                        <field name="require_approval" invisible="1"/>
+                        <field name="approval_level" invisible="1"/>
+                        
+                        <!-- Cảnh báo xung đột -->
+                        <div class="alert alert-danger" role="alert" 
+                             attrs="{'invisible': [('has_conflict', '=', False)]}">
+                            <strong>⚠️ Cảnh báo xung đột!</strong><br/>
+                            Có <field name="conflict_count" class="oe_inline"/> booking khác xung đột thời gian với phòng này.
+                            <button name="action_suggest_alternatives" string="Xem phòng gợi ý" type="object" class="btn-link"/>
+                        </div>
+                        
+                        <!-- Yêu cầu phê duyệt -->
+                        <div class="alert alert-warning" role="alert" 
+                             attrs="{'invisible': [('require_approval', '=', False)]}">
+                            <strong>ℹ️ Yêu cầu phê duyệt</strong><br/>
+                            Booking này cần phê duyệt cấp <field name="approval_level" class="oe_inline"/>.
+                        </div>
+                        
+                        <div class="oe_title">
+                            <label for="name" class="oe_edit_only"/>
+                            <h1><field name="name" readonly="1"/></h1>
+                            <label for="subject" class="oe_edit_only"/>
+                            <h2><field name="subject" placeholder="Chủ đề cuộc họp..."/></h2>
+                        </div>
+                        
+                        <group>
+                            <group string="Thông tin phòng họp">
+                                <field name="room_id" options="{'no_create': True}"/>
+                                <field name="room_location_id" readonly="1"/>
+                                <field name="booker_id"/>
+                                <field name="organizer_id"/>
+                            </group>
+                            <group string="Thời gian">
+                                <field name="start_time"/>
+                                <field name="end_time"/>
+                                <field name="duration" widget="float_time"/>
+                                <field name="expected_attendees"/>
+                            </group>
+                        </group>
+                        
+                        <group>
+                            <field name="description" placeholder="Mô tả chi tiết cuộc họp..."/>
+                        </group>
+                        
+                        <notebook>
+                            <!-- Tab 1: Người tham dự -->
+                            <page string="Người tham dự" name="attendees">
+                                <field name="attendee_ids" widget="many2many_tags">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="department_id"/>
+                                        <field name="work_email"/>
+                                        <field name="phone"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            
+                            <!-- Tab 2: Thiết bị -->
+                            <page string="Thiết bị" name="equipment">
+                                <group>
+                                    <group>
+                                        <field name="equipment_prepared" widget="boolean_toggle"/>
+                                        <field name="equipment_checked_by" readonly="1" 
+                                               attrs="{'invisible': [('equipment_prepared', '=', False)]}"/>
+                                        <field name="equipment_checked_date" readonly="1" 
+                                               attrs="{'invisible': [('equipment_prepared', '=', False)]}"/>
+                                    </group>
+                                    <group>
+                                        <button name="action_prepare_equipment" string="✓ Đánh dấu đã chuẩn bị" 
+                                                type="object" class="oe_highlight"
+                                                attrs="{'invisible': ['|', ('equipment_prepared', '=', True), ('equipment_ids', '=', [])]}"/>
+                                        <button name="action_return_equipment" string="↩ Trả lại thiết bị" 
+                                                type="object"
+                                                attrs="{'invisible': [('equipment_prepared', '=', False)]}"/>
+                                        <button name="action_report_equipment_issue" string="⚠ Báo cáo sự cố" 
+                                                type="object" class="btn-warning"
+                                                attrs="{'invisible': [('equipment_ids', '=', [])]}"/>
+                                    </group>
+                                </group>
+                                
+                                <field name="equipment_ids" 
+                                       context="{'default_location_id': room_location_id}"
+                                       domain="[('location_id', '=', room_location_id), ('state', '=', 'available')]">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="category_id"/>
+                                        <field name="state" widget="badge"/>
+                                        <field name="location_id"/>
+                                    </tree>
+                                </field>
+                                
+                                <group>
+                                    <field name="equipment_notes" placeholder="Ghi chú về thiết bị (yêu cầu đặc biệt, setup, v.v.)"/>
+                                </group>
+                            </page>
+                            
+                            <!-- Tab 3: Phê duyệt -->
+                            <page string="Phê duyệt" name="approval" 
+                                  attrs="{'invisible': [('require_approval', '=', False)]}">
+                                <group>
+                                    <group>
+                                        <field name="require_approval" readonly="1"/>
+                                        <field name="approval_level" readonly="1"/>
+                                        <field name="approved_by_id" readonly="1"/>
+                                        <field name="approved_date" readonly="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="rejection_reason" readonly="1" 
+                                               attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <!-- Tab 4: Check-in / Check-out -->
+                            <page string="Check-in/out" name="checkin">
+                                <group>
+                                    <group>
+                                        <field name="check_in_time" readonly="1"/>
+                                        <field name="check_out_time" readonly="1"/>
+                                        <field name="auto_cancel_if_no_checkin"/>
+                                    </group>
+                                </group>
+                            </page>
+                            
+                            <!-- Tab 5: Đánh giá & Thống kê -->
+                            <page string="Đánh giá" name="feedback" 
+                                  attrs="{'invisible': [('state', '!=', 'completed')]}">
+                                <group>
+                                    <group>
+                                        <field name="actual_attendees"/>
+                                        <field name="rating" widget="priority"/>
+                                    </group>
+                                </group>
+                                <group>
+                                    <field name="feedback" placeholder="Phản hồi về cuộc họp, phòng, thiết bị..."/>
+                                </group>
+                                
+                                <button name="action_feedback" string="📝 Cập nhật đánh giá" 
+                                        type="object" class="oe_highlight"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    
+                    <!-- Chatter -->
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- ==================== KANBAN VIEW ==================== -->
+        <record id="view_meeting_room_booking_kanban" model="ir.ui.view">
+            <field name="name">meeting.room.booking.kanban</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <kanban class="o_kanban_mobile" default_group_by="state">
+                    <field name="name"/>
+                    <field name="subject"/>
+                    <field name="room_id"/>
+                    <field name="organizer_id"/>
+                    <field name="start_time"/>
+                    <field name="end_time"/>
+                    <field name="state"/>
+                    <field name="has_conflict"/>
+                    <field name="color"/>
+                    <field name="equipment_prepared"/>
+                    
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div t-attf-class="oe_kanban_color_#{kanban_getcolor(record.color.raw_value)} oe_kanban_card oe_kanban_global_click">
+                                <div class="o_dropdown_kanban dropdown">
+                                    <a class="dropdown-toggle o-no-caret btn" role="button" data-toggle="dropdown" href="#" aria-label="Dropdown menu" title="Dropdown menu">
+                                        <span class="fa fa-ellipsis-v"/>
+                                    </a>
+                                    <div class="dropdown-menu" role="menu">
+                                        <a role="menuitem" type="edit" class="dropdown-item">Sửa</a>
+                                        <a role="menuitem" type="delete" class="dropdown-item">Xóa</a>
+                                    </div>
+                                </div>
+                                
+                                <div class="oe_kanban_content">
+                                    <div class="o_kanban_record_top">
+                                        <div class="o_kanban_record_headings">
+                                            <strong class="o_kanban_record_title">
+                                                <field name="subject"/>
+                                            </strong>
+                                        </div>
+                                        <span t-if="record.has_conflict.raw_value" class="badge badge-danger">⚠️ Xung đột</span>
+                                    </div>
+                                    
+                                    <div class="o_kanban_record_body">
+                                        <field name="name" class="text-muted"/>
+                                        <div>
+                                            <i class="fa fa-map-marker" title="Phòng họp"/> <field name="room_id"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-user" title="Người tổ chức"/> <field name="organizer_id"/>
+                                        </div>
+                                        <div>
+                                            <i class="fa fa-clock-o"/> 
+                                            <t t-esc="record.start_time.value.toLocaleString()"/>
+                                        </div>
+                                        <div t-if="record.equipment_prepared.raw_value">
+                                            <span class="badge badge-success">✓ Thiết bị đã chuẩn bị</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="o_kanban_record_bottom">
+                                        <div class="oe_kanban_bottom_left">
+                                            <field name="activity_ids" widget="kanban_activity"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ==================== CALENDAR VIEW (Cải tiến) ==================== -->
+        <record id="view_meeting_room_booking_calendar" model="ir.ui.view">
+            <field name="name">meeting.room.booking.calendar</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <calendar string="Lịch đặt phòng" 
+                          date_start="start_time" 
+                          date_stop="end_time" 
+                          color="state"
+                          quick_add="False"
+                          mode="month"
+                          event_open_popup="true">
+                    <field name="name"/>
+                    <field name="subject"/>
+                    <field name="room_id"/>
+                    <field name="organizer_id"/>
+                    <field name="state"/>
+                    <field name="has_conflict"/>
+                    <field name="color"/>
+                </calendar>
+            </field>
+        </record>
+
+        <!-- ==================== SEARCH VIEW (Đầy đủ filters) ==================== -->
+        <record id="view_meeting_room_booking_search" model="ir.ui.view">
+            <field name="name">meeting.room.booking.search</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="subject"/>
+                    <field name="room_id"/>
+                    <field name="organizer_id"/>
+                    <field name="booker_id"/>
+                    
+                    <!-- Filters theo trạng thái -->
+                    <separator/>
+                    <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                    <filter string="Chờ duyệt" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Đã xác nhận" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                    <filter string="Đang diễn ra" name="in_progress" domain="[('state', '=', 'in_progress')]"/>
+                    <filter string="Hoàn thành" name="completed" domain="[('state', '=', 'completed')]"/>
+                    <filter string="Đã hủy" name="cancelled" domain="[('state', '=', 'cancelled')]"/>
+                    
+                    <!-- Filters theo thời gian -->
+                    <separator/>
+                    <filter string="Hôm nay" name="today" 
+                            domain="[('start_time', '&gt;=', datetime.datetime.combine(context_today(), datetime.time(0,0,0))), 
+                                     ('start_time', '&lt;', datetime.datetime.combine(context_today() + datetime.timedelta(days=1), datetime.time(0,0,0)))]"/>
+                    <filter string="Tuần này" name="this_week" 
+                            domain="[('start_time', '&gt;=', (context_today() - datetime.timedelta(days=context_today().weekday())).strftime('%Y-%m-%d')),
+                                     ('start_time', '&lt;', (context_today() + datetime.timedelta(days=7-context_today().weekday())).strftime('%Y-%m-%d'))]"/>
+                    <filter string="Tháng này" name="this_month" 
+                            domain="[('start_time', '&gt;=', datetime.datetime.now().strftime('%Y-%m-01'))]"/>
+                    
+                    <!-- Filters đơn giản -->
+                    <separator/>
+                    <filter string="✓ Có thiết bị" name="has_equipment" domain="[('equipment_ids', '!=', False)]"/>
+                    <filter string="✓ Thiết bị đã chuẩn bị" name="equipment_ready" domain="[('equipment_prepared', '=', True)]"/>
+                    <filter string="👤 Booking của tôi" name="my_bookings" domain="[('booker_id.user_id', '=', uid)]"/>
+                    <filter string="👥 Tôi tham dự" name="i_attend" domain="[('attendee_ids.user_id', '=', uid)]"/>
+                    
+                    <!-- Group By -->
+                    <group expand="0" string="Group By">
+                        <filter string="Phòng họp" name="group_room" context="{'group_by': 'room_id'}"/>
+                        <filter string="Người tổ chức" name="group_organizer" context="{'group_by': 'organizer_id'}"/>
+                        <filter string="Trạng thái" name="group_state" context="{'group_by': 'state'}"/>
+                        <filter string="Ngày bắt đầu" name="group_start_date" context="{'group_by': 'start_time:day'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- ==================== PIVOT VIEW (Thống kê) ==================== -->
+        <record id="view_meeting_room_booking_pivot" model="ir.ui.view">
+            <field name="name">meeting.room.booking.pivot</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <pivot string="Thống kê đặt phòng">
+                    <field name="room_id" type="row"/>
+                    <field name="state" type="col"/>
+                    <field name="duration" type="measure"/>
+                    <field name="expected_attendees" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- ==================== GRAPH VIEW (Biểu đồ) ==================== -->
+        <record id="view_meeting_room_booking_graph" model="ir.ui.view">
+            <field name="name">meeting.room.booking.graph</field>
+            <field name="model">meeting.room.booking</field>
+            <field name="arch" type="xml">
+                <graph string="Biểu đồ đặt phòng" type="bar">
+                    <field name="room_id"/>
+                    <field name="duration" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- ==================== ACTION ==================== -->
+        <record id="action_meeting_room_booking" model="ir.actions.act_window">
+            <field name="name">Đặt phòng họp</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">meeting.room.booking</field>
+            <field name="view_mode">calendar,kanban,tree,form,pivot,graph</field>
+            <field name="search_view_id" ref="view_meeting_room_booking_search"/>
+            <field name="context">{
+                'search_default_today': 1,
+                'search_default_confirmed': 1,
+                'search_default_in_progress': 1
+            }</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Tạo booking phòng họp mới
+                </p>
+                <p>
+                    Hệ thống sẽ tự động kiểm tra xung đột thời gian và gợi ý phòng thay thế.
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

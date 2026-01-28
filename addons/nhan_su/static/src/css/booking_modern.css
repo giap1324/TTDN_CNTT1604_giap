@@ -1,0 +1,20 @@
+/* booking_modern.css - minimal styles to avoid asset compilation error */
+.o_booking_form .oe_title h1 {
+  font-size: 1.25rem;
+  margin: 0 0 6px 0;
+}
+.o_booking_form .alert {
+  padding: 10px 12px;
+  border-radius: 6px;
+}
+.o_booking_form .btn-primary { background-color: #0d6efd; color: #fff; }
+.o_booking_form .btn-success { background-color: #198754; color: #fff; }
+.o_booking_form .btn-danger { background-color: #dc3545; color: #fff; }
+.o_booking_form .btn-info { background-color: #0dcaf0; color: #000; }
+
+/* Small helpers */
+.o_booking_form .mb-3 { margin-bottom: 1rem; }
+.o_booking_form .mb-2 { margin-bottom: 0.5rem; }
+
+/* Calendar color by room */
+.oe_calendar .o_event[data-color] { border-left-width: 4px; }

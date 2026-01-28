@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============================================ -->
+    <!-- 🔍 ANOMALY DETECTION VIEWS                   -->
+    <!-- ============================================ -->
+    
+    <!-- Kanban View - Professional Design -->
+    <record id="view_asset_anomaly_detection_kanban" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.kanban</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_ai_kanban" default_group_by="severity">
+                <field name="id"/>
+                <field name="asset_id"/>
+                <field name="severity"/>
+                <field name="actual_cost"/>
+                <field name="expected_cost"/>
+                <field name="deviation"/>
+                <field name="z_score"/>
+                <field name="anomaly_type"/>
+                <field name="state"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header with Severity Color -->
+                            <div t-attf-class="p-3 rounded-top" t-attf-style="background: linear-gradient(135deg, #{record.severity.raw_value == 'critical' ? '#ff416c, #ff4b2b' : record.severity.raw_value == 'high' ? '#f093fb, #f5576c' : record.severity.raw_value == 'medium' ? '#4facfe, #00f2fe' : '#11998e, #38ef7d'});">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <strong style="font-size: 14px;">
+                                        <i t-if="record.severity.raw_value == 'critical'" class="fa fa-exclamation-circle mr-1"/>
+                                        <i t-if="record.severity.raw_value == 'high'" class="fa fa-exclamation-triangle mr-1"/>
+                                        <i t-if="record.severity.raw_value == 'medium'" class="fa fa-info-circle mr-1"/>
+                                        <i t-if="record.severity.raw_value == 'low'" class="fa fa-check-circle mr-1"/>
+                                        <field name="severity"/>
+                                    </strong>
+                                    <span class="badge" style="background: rgba(255,255,255,0.25); font-size: 11px;">
+                                        <field name="anomaly_type"/>
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="p-3">
+                                <div class="font-weight-bold mb-2" style="font-size: 13px;">
+                                    <i class="fa fa-cube text-muted mr-1"/>
+                                    <field name="asset_id"/>
+                                </div>
+                                
+                                <!-- Cost Comparison -->
+                                <div class="row mb-2">
+                                    <div class="col-6">
+                                        <div class="text-muted small">Chi phí thực</div>
+                                        <div class="font-weight-bold text-danger">
+                                            <field name="actual_cost"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted small">Dự kiến</div>
+                                        <div class="font-weight-bold text-success">
+                                            <field name="expected_cost"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Deviation Bar -->
+                                <div class="mb-2">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="text-muted">Độ lệch</span>
+                                        <span class="font-weight-bold">
+                                            <field name="deviation" widget="percentage"/>
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Z-Score -->
+                                <div class="p-2 rounded" style="background: #f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-muted small">📊 Z-Score</span>
+                                        <span class="font-weight-bold" t-attf-style="color: #{Math.abs(record.z_score.raw_value) > 3 ? '#ff416c' : Math.abs(record.z_score.raw_value) > 2 ? '#f5576c' : '#667eea'};">
+                                            <field name="z_score" digits="[10,2]"/>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="p-2 border-top d-flex justify-content-between align-items-center">
+                                <field name="state" widget="label_selection" options="{'classes': {'detected': 'info', 'investigating': 'warning', 'confirmed': 'primary', 'resolved': 'success', 'false_positive': 'secondary'}}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Tree View - Professional -->
+    <record id="view_asset_anomaly_detection_tree" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.tree</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="severity=='critical'" 
+                  decoration-warning="severity in ('high','medium')"
+                  decoration-muted="state in ('resolved','false_positive')"
+                  default_order="severity desc, detection_date desc">
+                <header>
+                    <button name="run_anomaly_detection" 
+                            string="🔍 Quét bất thường" 
+                            type="object" 
+                            class="btn-primary"/>
+                </header>
+                <field name="display_name" string="📋 Mã"/>
+                <field name="asset_id" string="📦 Tài sản"/>
+                <field name="period_month" string="📅 Tháng"/>
+                <field name="period_year" string="📅 Năm"/>
+                <field name="actual_cost" string="💰 Chi phí thực" widget="monetary" options="{'currency_field': 'currency_id'}" sum="Tổng"/>
+                <field name="expected_cost" string="💵 Dự kiến" widget="monetary" optional="show"/>
+                <field name="deviation" string="📊 Độ lệch" widget="percentage"/>
+                <field name="z_score" string="📈 Z-Score" widget="float" digits="[10,2]"/>
+                <field name="severity" string="⚠️ Mức độ" widget="badge" 
+                       decoration-danger="severity=='critical'"
+                       decoration-warning="severity=='high'"
+                       decoration-info="severity=='medium'"
+                       decoration-success="severity=='low'"/>
+                <field name="anomaly_type" string="🏷️ Loại" widget="badge"/>
+                <field name="state" string="📊 Trạng thái" widget="badge"
+                       decoration-success="state=='resolved'"
+                       decoration-info="state=='detected'"
+                       decoration-warning="state=='investigating'"
+                       decoration-primary="state=='confirmed'"
+                       decoration-muted="state=='false_positive'"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_asset_anomaly_detection_form" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.form</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_investigate" string="🔎 Điều tra" type="object"
+                            states="detected" class="btn-primary"/>
+                    <button name="action_confirm" string="✅ Xác nhận" type="object"
+                            states="investigating" class="btn-success"/>
+                    <button name="action_false_positive" string="❌ Báo động giả" type="object"
+                            states="detected,investigating" class="btn-warning"/>
+                    <button name="action_resolve" string="✔️ Đã xử lý" type="object"
+                            states="confirmed" class="btn-info"/>
+                    <field name="state" widget="statusbar" statusbar_visible="detected,investigating,confirmed,resolved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+                    
+                    <group>
+                        <group string="📋 Thông tin">
+                            <field name="asset_id"/>
+                            <field name="category_id"/>
+                            <field name="detection_date"/>
+                            <field name="anomaly_type"/>
+                            <field name="severity"/>
+                        </group>
+                        <group string="💰 Chi phí">
+                            <field name="actual_cost" widget="monetary"/>
+                            <field name="expected_cost" widget="monetary"/>
+                            <field name="deviation" widget="percentage"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="📊 Phân tích thống kê">
+                            <field name="period_month"/>
+                            <field name="period_year"/>
+                            <field name="z_score"/>
+                            <field name="isolation_score"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📝 Mô tả" name="description">
+                            <group>
+                                <field name="description" nolabel="1" placeholder="Chi tiết về bất thường..."/>
+                            </group>
+                        </page>
+                        <page string="💡 Khuyến nghị" name="recommendation">
+                            <group>
+                                <field name="recommendation" nolabel="1" placeholder="Đề xuất hành động..."/>
+                            </group>
+                        </page>
+                        <page string="🔎 Điều tra" name="investigation">
+                            <group>
+                                <field name="investigation_notes" nolabel="1" placeholder="Ghi chú điều tra..."/>
+                            </group>
+                            <group string="Lịch sử bảo trì liên quan">
+                                <field name="maintenance_history_ids" nolabel="1">
+                                    <tree>
+                                        <field name="maintenance_date"/>
+                                        <field name="maintenance_type"/>
+                                        <field name="actual_cost" widget="monetary"/>
+                                        <field name="description"/>
+                                    </tree>
+                                </field>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_asset_anomaly_detection_search" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.search</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asset_id"/>
+                <field name="category_id"/>
+                <filter name="critical" string="🔴 Nghiêm trọng" domain="[('severity','=','critical')]"/>
+                <filter name="high" string="🟠 Cao" domain="[('severity','=','high')]"/>
+                <filter name="unresolved" string="⚠️ Chưa xử lý" domain="[('state','not in',['resolved','false_positive'])]"/>
+                <separator/>
+                <filter name="this_month" string="Tháng này" domain="[('detection_date','>=', (context_today() - relativedelta(months=1)).strftime('%%Y-%%m-%%d'))]"/>
+                <separator/>
+                <filter name="spike" string="📈 Tăng đột biến" domain="[('anomaly_type','=','spike')]"/>
+                <filter name="unusual" string="📊 Mẫu bất thường" domain="[('anomaly_type','=','unusual_pattern')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_severity" string="Mức độ" context="{'group_by': 'severity'}"/>
+                    <filter name="group_asset" string="Tài sản" context="{'group_by': 'asset_id'}"/>
+                    <filter name="group_type" string="Loại" context="{'group_by': 'anomaly_type'}"/>
+                    <filter name="group_month" string="Tháng" context="{'group_by': 'period_month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Pivot View -->
+    <record id="view_asset_anomaly_detection_pivot" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.pivot</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích bất thường">
+                <field name="period_year" type="row"/>
+                <field name="period_month" type="row"/>
+                <field name="severity" type="col"/>
+                <field name="actual_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Graph View -->
+    <record id="view_asset_anomaly_detection_graph" model="ir.ui.view">
+        <field name="name">asset.anomaly.detection.graph</field>
+        <field name="model">asset.anomaly.detection</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ bất thường" type="bar">
+                <field name="period_month"/>
+                <field name="actual_cost" type="measure"/>
+                <field name="severity" type="col"/>
+            </graph>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_asset_anomaly_detection" model="ir.actions.act_window">
+        <field name="name">🔍 Phát hiện bất thường</field>
+        <field name="res_model">asset.anomaly.detection</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="search_view_id" ref="view_asset_anomaly_detection_search"/>
+        <field name="context">{'search_default_unresolved': 1}</field>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-search-plus mr-2"/> Phát hiện bất thường
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin-bottom: 20px;">
+                        Hệ thống AI phân tích chi phí bảo trì và phát hiện các điểm bất thường
+                    </p>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-4 mb-3">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #667eea;">
+                            <i class="fa fa-line-chart fa-2x mb-2" style="color: #667eea;"/>
+                            <h5>Z-Score Analysis</h5>
+                            <p class="text-muted small mb-0">Phát hiện chi phí lệch chuẩn thống kê</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #11998e;">
+                            <i class="fa fa-tree fa-2x mb-2" style="color: #11998e;"/>
+                            <h5>Isolation Forest</h5>
+                            <p class="text-muted small mb-0">ML phát hiện mẫu chi phí bất thường</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: #f8f9fa; padding: 25px; border-radius: 16px; border-left: 4px solid #f5576c;">
+                            <i class="fa fa-th-large fa-2x mb-2" style="color: #f5576c;"/>
+                            <h5>Category Outliers</h5>
+                            <p class="text-muted small mb-0">So sánh với tài sản cùng loại</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+    
+    <!-- ============================================ -->
+    <!-- 🎯 COST OPTIMIZATION VIEWS                   -->
+    <!-- ============================================ -->
+    
+    <!-- Kanban View - Professional Design -->
+    <record id="view_asset_cost_optimization_kanban" model="ir.ui.view">
+        <field name="name">asset.cost.optimization.kanban</field>
+        <field name="model">asset.cost.optimization</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_dashboard o_ai_kanban" default_group_by="decision">
+                <field name="id"/>
+                <field name="asset_id"/>
+                <field name="category_id"/>
+                <field name="decision"/>
+                <field name="decision_confidence"/>
+                <field name="urgency"/>
+                <field name="remaining_life_percent"/>
+                <field name="total_maintenance_cost"/>
+                <field name="savings_if_replace"/>
+                <field name="state"/>
+                <field name="currency_id"/>
+                
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <!-- Header with Decision Color -->
+                            <div class="p-3 rounded-top" t-attf-style="background: linear-gradient(135deg, #{record.decision.raw_value == 'replace' or record.decision.raw_value == 'dispose' ? '#ff416c, #ff4b2b' : record.decision.raw_value == 'maintain_now' or record.decision.raw_value == 'major_repair' ? '#f093fb, #f5576c' : '#11998e, #38ef7d'});">
+                                <div class="d-flex justify-content-between align-items-center text-white">
+                                    <div>
+                                        <i t-if="record.decision.raw_value == 'replace'" class="fa fa-refresh fa-lg"/>
+                                        <i t-if="record.decision.raw_value == 'dispose'" class="fa fa-trash fa-lg"/>
+                                        <i t-if="record.decision.raw_value == 'maintain_now'" class="fa fa-wrench fa-lg"/>
+                                        <i t-if="record.decision.raw_value == 'major_repair'" class="fa fa-cogs fa-lg"/>
+                                        <i t-if="record.decision.raw_value == 'maintain_later'" class="fa fa-clock-o fa-lg"/>
+                                        <i t-if="record.decision.raw_value == 'monitor'" class="fa fa-eye fa-lg"/>
+                                    </div>
+                                    <strong style="font-size: 12px; text-transform: uppercase;">
+                                        <field name="decision"/>
+                                    </strong>
+                                </div>
+                            </div>
+                            
+                            <!-- Body -->
+                            <div class="p-3">
+                                <div class="font-weight-bold mb-2" style="font-size: 14px;">
+                                    <field name="asset_id"/>
+                                </div>
+                                <div class="text-muted small mb-3">
+                                    <field name="category_id"/>
+                                </div>
+                                
+                                <!-- Remaining Life -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between small mb-1">
+                                        <span class="text-muted">⏱️ Tuổi thọ còn lại</span>
+                                        <span class="font-weight-bold"><field name="remaining_life_percent"/>%</span>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 10px;">
+                                        <div class="progress-bar" 
+                                             role="progressbar" 
+                                             t-attf-style="width: #{record.remaining_life_percent.raw_value}%; background: linear-gradient(90deg, #{record.remaining_life_percent.raw_value &lt; 20 ? '#ff416c' : record.remaining_life_percent.raw_value &lt; 50 ? '#f5576c' : '#11998e'} 0%, #{record.remaining_life_percent.raw_value &lt; 20 ? '#ff4b2b' : record.remaining_life_percent.raw_value &lt; 50 ? '#f093fb' : '#38ef7d'} 100%);">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Stats -->
+                                <div class="row small">
+                                    <div class="col-6">
+                                        <div class="text-muted">🔧 Chi phí BT</div>
+                                        <div class="font-weight-bold">
+                                            <field name="total_maintenance_cost" widget="monetary"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-muted">💰 Tiết kiệm</div>
+                                        <div class="font-weight-bold text-success">
+                                            <field name="savings_if_replace" widget="monetary"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Confidence -->
+                                <div class="mt-3 p-2 rounded" style="background: #f8f9fa;">
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-muted">🎯 Độ tin cậy</span>
+                                        <span class="font-weight-bold"><field name="decision_confidence"/>%</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Footer -->
+                            <div class="p-2 border-top d-flex justify-content-between align-items-center">
+                                <field name="urgency" widget="badge" decoration-danger="urgency=='critical'" decoration-warning="urgency=='high'" decoration-info="urgency=='medium'" decoration-success="urgency=='low'"/>
+                                <field name="state" widget="label_selection" options="{'classes': {'draft': 'secondary', 'analyzed': 'info', 'approved': 'primary', 'executed': 'success', 'cancelled': 'danger'}}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+    
+    <!-- Tree View - Professional -->
+    <record id="view_asset_cost_optimization_tree" model="ir.ui.view">
+        <field name="name">asset.cost.optimization.tree</field>
+        <field name="model">asset.cost.optimization</field>
+        <field name="arch" type="xml">
+            <tree decoration-danger="urgency=='critical'" 
+                  decoration-warning="urgency=='high'"
+                  decoration-success="decision=='monitor'"
+                  default_order="urgency desc, decision_confidence desc">
+                <header>
+                    <button name="analyze_all_assets" 
+                            string="🎯 Phân tích tất cả tài sản" 
+                            type="object" 
+                            class="btn-primary"/>
+                </header>
+                <field name="asset_id" string="📦 Tài sản"/>
+                <field name="category_id" string="📁 Danh mục" optional="show"/>
+                <field name="asset_age_years" string="📅 Tuổi (năm)" widget="float" digits="[10,1]"/>
+                <field name="remaining_life_percent" string="⏱️ Còn lại" widget="progressbar"/>
+                <field name="total_maintenance_cost" string="🔧 Tổng chi phí BT" widget="monetary" sum="Tổng"/>
+                <field name="cost_to_value_ratio" string="📊 Tỷ lệ CP/GT" widget="float" digits="[10,1]"/>
+                <field name="decision" string="🎯 Quyết định" widget="badge"
+                       decoration-danger="decision in ('replace','dispose')"
+                       decoration-warning="decision in ('maintain_now','major_repair')"
+                       decoration-success="decision in ('monitor','maintain_later')"/>
+                <field name="decision_confidence" string="🎯 Độ tin cậy" widget="progressbar"/>
+                <field name="urgency" string="⚠️ Cấp độ" widget="badge"
+                       decoration-danger="urgency=='critical'"
+                       decoration-warning="urgency=='high'"
+                       decoration-info="urgency=='medium'"
+                       decoration-success="urgency=='low'"/>
+                <field name="savings_if_replace" string="💰 Tiết kiệm" widget="monetary" optional="show"/>
+                <field name="state" string="📊 Trạng thái" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+    
+    <!-- Form View -->
+    <record id="view_asset_cost_optimization_form" model="ir.ui.view">
+        <field name="name">asset.cost.optimization.form</field>
+        <field name="model">asset.cost.optimization</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_analyze" string="🎯 Phân tích" type="object"
+                            states="draft" class="btn-primary"/>
+                    <button name="action_analyze" string="🔄 Phân tích lại" type="object"
+                            states="analyzed" class="btn-secondary"/>
+                    <button name="action_approve" string="✅ Duyệt" type="object"
+                            states="analyzed" class="btn-success"/>
+                    <button name="action_execute" string="✔️ Đã thực hiện" type="object"
+                            states="approved" class="btn-info"/>
+                    <button name="action_cancel" string="❌ Hủy" type="object"
+                            states="draft,analyzed" class="btn-warning"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,analyzed,approved,executed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="display_name"/>
+                        </h1>
+                    </div>
+                    
+                    <!-- Decision Banner -->
+                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state','=','draft')]}">
+                        <h4>
+                            <field name="decision" readonly="1"/> 
+                            <span class="float-right">
+                                Độ tin cậy: <field name="decision_confidence" widget="progressbar" class="d-inline-block" style="width: 150px;"/>
+                            </span>
+                        </h4>
+                    </div>
+                    
+                    <group>
+                        <group string="📋 Thông tin tài sản">
+                            <field name="asset_id"/>
+                            <field name="category_id"/>
+                            <field name="analysis_date"/>
+                            <field name="purchase_price" widget="monetary"/>
+                            <field name="current_value" widget="monetary"/>
+                        </group>
+                        <group string="⏱️ Tuổi thọ">
+                            <field name="asset_age_years"/>
+                            <field name="expected_lifespan"/>
+                            <field name="remaining_life_percent" widget="progressbar"/>
+                            <field name="urgency"/>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group string="🔧 Chi phí bảo trì">
+                            <field name="total_maintenance_cost" widget="monetary"/>
+                            <field name="avg_annual_maintenance" widget="monetary"/>
+                            <field name="last_year_maintenance" widget="monetary"/>
+                            <field name="maintenance_count"/>
+                            <field name="maintenance_trend"/>
+                        </group>
+                        <group string="📊 Phân tích chi phí">
+                            <field name="cost_to_value_ratio"/>
+                            <field name="annual_cost_ratio"/>
+                            <field name="replacement_cost" widget="monetary"/>
+                            <field name="projected_3year_maintenance" widget="monetary"/>
+                        </group>
+                    </group>
+                    
+                    <group string="💰 So sánh kinh tế 5 năm">
+                        <group>
+                            <field name="maintain_cost_5year" widget="monetary"/>
+                            <field name="replace_cost_5year" widget="monetary"/>
+                        </group>
+                        <group>
+                            <field name="savings_if_replace" widget="monetary"/>
+                            <field name="break_even_months"/>
+                        </group>
+                    </group>
+                    
+                    <group string="📅 Thời gian">
+                        <group>
+                            <field name="optimal_maintenance_date"/>
+                        </group>
+                        <group>
+                            <field name="next_decision_date"/>
+                        </group>
+                    </group>
+                    
+                    <notebook>
+                        <page string="📝 Lý do quyết định" name="reasons">
+                            <group>
+                                <field name="decision_reasons" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="💡 Khuyến nghị" name="recommendations">
+                            <field name="recommendations" nolabel="1"/>
+                        </page>
+                        <page string="🔄 Phương án thay thế" name="alternatives">
+                            <group>
+                                <field name="alternative_options" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    
+    <!-- Search View -->
+    <record id="view_asset_cost_optimization_search" model="ir.ui.view">
+        <field name="name">asset.cost.optimization.search</field>
+        <field name="model">asset.cost.optimization</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="asset_id"/>
+                <field name="category_id"/>
+                <filter name="replace" string="🔄 Cần thay mới" domain="[('decision','=','replace')]"/>
+                <filter name="maintain_now" string="🔧 Bảo trì ngay" domain="[('decision','=','maintain_now')]"/>
+                <filter name="critical" string="🔴 Khẩn cấp" domain="[('urgency','=','critical')]"/>
+                <separator/>
+                <filter name="pending" string="⏳ Chờ xử lý" domain="[('state','in',['analyzed','approved'])]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_decision" string="Quyết định" context="{'group_by': 'decision'}"/>
+                    <filter name="group_urgency" string="Mức độ" context="{'group_by': 'urgency'}"/>
+                    <filter name="group_category" string="Danh mục" context="{'group_by': 'category_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    
+    <!-- Pivot View -->
+    <record id="view_asset_cost_optimization_pivot" model="ir.ui.view">
+        <field name="name">asset.cost.optimization.pivot</field>
+        <field name="model">asset.cost.optimization</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích quyết định">
+                <field name="category_id" type="row"/>
+                <field name="decision" type="col"/>
+                <field name="savings_if_replace" type="measure"/>
+                <field name="total_maintenance_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+    
+    <!-- Action -->
+    <record id="action_asset_cost_optimization" model="ir.actions.act_window">
+        <field name="name">🎯 Tối ưu chi phí AI</field>
+        <field name="res_model">asset.cost.optimization</field>
+        <field name="view_mode">kanban,tree,form,pivot</field>
+        <field name="search_view_id" ref="view_asset_cost_optimization_search"/>
+        <field name="help" type="html">
+            <div class="text-center" style="padding: 40px;">
+                <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 40px; border-radius: 20px; margin-bottom: 30px;">
+                    <h1 style="color: white; margin-bottom: 15px;">
+                        <i class="fa fa-bullseye mr-2"/> Tối ưu chi phí AI
+                    </h1>
+                    <p style="color: rgba(255,255,255,0.9); font-size: 16px; margin-bottom: 20px;">
+                        AI phân tích và đưa ra quyết định tối ưu cho từng tài sản
+                    </p>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-md-4 mb-3">
+                        <div style="background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%); padding: 25px; border-radius: 16px; color: white;">
+                            <i class="fa fa-wrench fa-2x mb-2"/>
+                            <h5>Bảo trì ngay</h5>
+                            <p class="small mb-0 opacity-75">Cần hành động trong thời gian ngắn</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%); padding: 25px; border-radius: 16px; color: white;">
+                            <i class="fa fa-refresh fa-2x mb-2"/>
+                            <h5>Thay mới</h5>
+                            <p class="small mb-0 opacity-75">Thay thế tài sản hiệu quả hơn</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <div style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); padding: 25px; border-radius: 16px; color: white;">
+                            <i class="fa fa-eye fa-2x mb-2"/>
+                            <h5>Theo dõi</h5>
+                            <p class="small mb-0 opacity-75">Tiếp tục sử dụng và giám sát</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </field>
+    </record>
+    
+    <!-- ==================== MENU ==================== -->
+    <menuitem id="menu_asset_anomaly_detection" name="🔍 Phát hiện bất thường" 
+              parent="nhan_su.menu_asset_ai_root" sequence="20"
+              action="action_asset_anomaly_detection"/>
+    
+    <menuitem id="menu_asset_cost_optimization" name="🎯 Tối ưu chi phí" 
+              parent="nhan_su.menu_asset_ai_root" sequence="30"
+              action="action_asset_cost_optimization"/>
+    
+</odoo>

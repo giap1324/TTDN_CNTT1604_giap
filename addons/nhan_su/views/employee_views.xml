@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_hr_employee_extended_tree" model="ir.ui.view">
+            <field name="name">hr.employee.extended.tree</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="arch" type="xml">
+                <tree string="Danh sách nhân viên" import="1">
+                    <field name="employee_code"/>
+                    <field name="name"/>
+                    <field name="department_id"/>
+                    <field name="job_title"/>
+                    <field name="phone"/>
+                    <field name="work_email"/>
+                    <field name="state"/>
+                    <field name="hire_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_hr_employee_extended_form" model="ir.ui.view">
+            <field name="name">hr.employee.extended.form</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="arch" type="xml">
+                <form string="Thông tin nhân viên">
+                    <header>
+                        <button name="action_activate_profile" string="Kích hoạt hồ sơ"
+                                type="object" class="oe_highlight"
+                                attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                        <button name="action_deactivate_profile" string="Hủy kích hoạt"
+                                type="object"
+                                attrs="{'invisible': [('state', '!=', 'active')]}"/>
+                        <button name="action_terminate_profile" string="Đánh dấu nghỉ việc"
+                                type="object"
+                                attrs="{'invisible': [('state', '==', 'terminated')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,pending,active,inactive"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="name" placeholder="Họ và tên đầy đủ"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group string="Thông tin cơ bản">
+                                <field name="employee_code"/>
+                                <field name="date_of_birth"/>
+                                <field name="age" readonly="1"/>
+                                <field name="gender"/>
+                                <field name="marital_status"/>
+                                <field name="ethnicity"/>
+                                <field name="religion"/>
+                            </group>
+                            <group string="CMND/CCCD">
+                                <field name="identity_number"/>
+                                <field name="identity_issued_date"/>
+                                <field name="identity_issued_place"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Địa chỉ">
+                                <field name="permanent_address"/>
+                                <field name="current_address"/>
+                            </group>
+                            <group string="Liên hệ">
+                                <field name="phone"/>
+                                <field name="personal_email"/>
+                                <field name="work_email" readonly="1"/>
+                            </group>
+                            <group string="📱 Telegram">
+                                <field name="telegram_chat_id" placeholder="123456789"/>
+                                <field name="telegram_enabled"/>
+                                <div class="text-muted" colspan="2">
+                                    <i class="fa fa-info-circle"/> 
+                                    Lấy Chat ID từ @userinfobot trên Telegram
+                                </div>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Thông tin công việc">
+                                <field name="department_id"/>
+                                <field name="job_title"/>
+                                <field name="manager_id"/>
+                                <field name="hire_date"/>
+                                <field name="years_of_service" readonly="1"/>
+                                <field name="contract_type"/>
+                                <field name="work_location"/>
+                                <field name="work_shift"/>
+                            </group>
+                            <group string="Học vấn &amp; Chuyên môn">
+                                <field name="education_level"/>
+                                <field name="major"/>
+                                <field name="school"/>
+                                <field name="graduation_year"/>
+                                <field name="certificates"/>
+                                <field name="special_skills"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Liên hệ khẩn cấp">
+                                <field name="emergency_contact_name"/>
+                                <field name="emergency_contact_relationship"/>
+                                <field name="emergency_contact_phone"/>
+                                <field name="emergency_contact_address"/>
+                            </group>
+                            <group string="Tài khoản hệ thống">
+                                <field name="user_id" readonly="1"/>
+                                <field name="username" readonly="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Tài liệu đính kèm">
+                                <group>
+                                    <group>
+                                        <field name="photo" widget="image" class="oe_avatar"/>
+                                        <field name="photo_filename" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="identity_scan" widget="image"/>
+                                        <field name="identity_scan_filename" invisible="1"/>
+                                        <field name="diploma_scan" widget="image"/>
+                                        <field name="diploma_scan_filename" invisible="1"/>
+                                    </group>
+                                    <group>
+                                        <field name="contract_scan" widget="image"/>
+                                        <field name="contract_scan_filename" invisible="1"/>
+                                        <field name="health_check_scan" widget="image"/>
+                                        <field name="health_check_scan_filename" invisible="1"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Lịch sử thay đổi">
+                                <field name="history_ids" readonly="1">
+                                    <tree string="Lịch sử">
+                                        <field name="change_date"/>
+                                        <field name="change_type"/>
+                                        <field name="changed_by"/>
+                                        <field name="changes"/>
+                                        <field name="reason"/>
+                                        <field name="approved_by"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" widget="mail_followers"/>
+                        <field name="activity_ids" widget="mail_activity"/>
+                        <field name="message_ids" widget="mail_thread"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_hr_employee_extended_search" model="ir.ui.view">
+            <field name="name">hr.employee.extended.search</field>
+            <field name="model">hr.employee.extended</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm nhân viên">
+                    <field name="name"/>
+                    <field name="employee_code"/>
+                    <field name="department_id"/>
+                    <field name="job_title"/>
+                    <field name="phone"/>
+                    <field name="work_email"/>
+                    <field name="state"/>
+                    <filter string="Hoạt động" name="active" domain="[('state', '=', 'active')]"/>
+                    <filter string="Chờ duyệt" name="pending" domain="[('state', '=', 'pending')]"/>
+                    <filter string="Không hoạt động" name="inactive" domain="[('state', '=', 'inactive')]"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Phòng ban" name="department" context="{'group_by': 'department_id'}"/>
+                        <filter string="Trạng thái" name="state_group" context="{'group_by': 'state'}"/>
+                        <filter string="Loại hợp đồng" name="contract" context="{'group_by': 'contract_type'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_hr_employee_extended" model="ir.actions.act_window">
+            <field name="name">Quản lý nhân viên</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">hr.employee.extended</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_hr_employee_extended_search"/>
+            <field name="help">Quản lý thông tin hồ sơ nhân viên</field>
+        </record>
+    </data>
+</odoo>
