@@ -398,20 +398,20 @@ class MeetingRoomBooking(models.Model):
             if record.equipment_ids and record.equipment_prepared:
                 record.action_return_equipment()
             
-            # Mở form đánh giá
-            return record.action_feedback()
+            # Mở form đánh giá - Tạm thời comment vì wizard chưa tồn tại
+            # return record.action_feedback()
         return True
 
-    def action_feedback(self):
-        """Mở form đánh giá"""
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Đánh giá cuộc họp',
-            'res_model': 'meeting.booking.feedback.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_booking_id': self.id}
-        }
+    # def action_feedback(self):
+    #     """Mở form đánh giá"""
+    #     return {
+    #         'type': 'ir.actions.act_window',
+    #         'name': 'Đánh giá cuộc họp',
+    #         'res_model': 'meeting.booking.feedback.wizard',
+    #         'view_mode': 'form',
+    #         'target': 'new',
+    #         'context': {'default_booking_id': self.id}
+    #     }
 
     def action_cancel(self):
         """Hủy đặt phòng"""

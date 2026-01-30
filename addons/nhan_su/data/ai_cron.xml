@@ -46,7 +46,7 @@
 
     <!-- Cron: Tự động lên lịch bảo trì + gửi Telegram (hàng ngày) -->
     <record id="ir_cron_auto_schedule_maintenance" model="ir.cron">
-        <field name="name">🛠️ AI: Lên lịch bảo trì & Telegram (Hàng ngày)</field>
+        <field name="name">🛠️ AI: Lên lịch bảo trì &amp; Telegram (Hàng ngày)</field>
         <field name="model_id" ref="model_asset_maintenance_prediction"/>
         <field name="state">code</field>
         <field name="code">model.cron_auto_schedule_maintenance()</field>

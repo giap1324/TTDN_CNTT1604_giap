@@ -68,7 +68,8 @@
                                 <field name="subject" placeholder="Nhập chủ đề cuộc họp..." 
                                        attrs="{'required': [('state', '!=', 'cancelled')]}"/>
                                 <field name="room_id" options="{'no_create': True}"
-                                       domain="[('state', '=', 'available')]"/>
+                                       domain="[('state', '=', 'available')]"
+                                       attrs="{'required': [('state', '!=', 'cancelled')]}"/>
                                 <field name="expected_attendees" 
                                        widget="integer"
                                        attrs="{'required': [('state', '!=', 'cancelled')]}"/>

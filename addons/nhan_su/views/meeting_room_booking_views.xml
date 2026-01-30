@@ -236,8 +236,8 @@
                                     <field name="feedback" placeholder="Phản hồi về cuộc họp, phòng, thiết bị..."/>
                                 </group>
                                 
-                                <button name="action_feedback" string="📝 Cập nhật đánh giá" 
-                                        type="object" class="oe_highlight"/>
+                                <!-- <button name="action_feedback" string="📝 Cập nhật đánh giá" 
+                                        type="object" class="oe_highlight"/> -->
                             </page>
                         </notebook>
                     </sheet>

@@ -241,8 +241,7 @@ class AssetMaintenancePrediction(models.Model):
     @api.model
     def predict_maintenance_for_asset(self, asset_id):
         """
-        Dự đoán bảo trì cho một tài sản cụ thể
-        Sử dụng XGBoost đã được train với 1000 dữ liệu giả lập
+     
         """
         if not ML_AVAILABLE:
             raise UserError(_('Thư viện ML chưa được cài đặt!\n\nChạy lệnh: pip3 install xgboost scikit-learn pandas numpy'))
@@ -269,8 +268,6 @@ class AssetMaintenancePrediction(models.Model):
         """
         Lấy dữ liệu thật từ (ưu tiên theo thứ tự):
         1. Lịch sử bảo trì THỰC TẾ (asset.maintenance.history) - TỐT NHẤT
-        2. Lịch sử predictions đã tạo (asset.maintenance.prediction) - TẠM ĐƯỢC
-        3. Thông tin tài sản thực tế (asset)
         
         Trả về DataFrame hoặc None nếu không đủ dữ liệu
         """

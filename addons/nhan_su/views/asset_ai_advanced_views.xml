@@ -274,7 +274,7 @@
     <record id="action_asset_anomaly_detection" model="ir.actions.act_window">
         <field name="name">🔍 Phát hiện bất thường</field>
         <field name="res_model">asset.anomaly.detection</field>
-        <field name="view_mode">kanban,tree,form,pivot,graph</field>
+        <field name="view_mode">tree,kanban,form,pivot,graph</field>
         <field name="search_view_id" ref="view_asset_anomaly_detection_search"/>
         <field name="context">{'search_default_unresolved': 1}</field>
         <field name="help" type="html">
@@ -605,7 +605,7 @@
     <record id="action_asset_cost_optimization" model="ir.actions.act_window">
         <field name="name">🎯 Tối ưu chi phí AI</field>
         <field name="res_model">asset.cost.optimization</field>
-        <field name="view_mode">kanban,tree,form,pivot</field>
+        <field name="view_mode">tree,kanban,form,pivot</field>
         <field name="search_view_id" ref="view_asset_cost_optimization_search"/>
         <field name="help" type="html">
             <div class="text-center" style="padding: 40px;">
